@@ -69,7 +69,7 @@ def newCatalog():
     ordenados por ningun criterio.  Son referenciados
     por los indices creados a continuacion.
     """
-    catalog['books'] = lt.newList('SINGLE_LINKED', compareBookIds)
+    catalog['books'] = lt.newList('SINGLE_LINKED', cmpInit)
 
     """
     A continuacion se crean indices por diferentes criterios
@@ -95,6 +95,8 @@ def addCategory(catalog,category):
     lt.addLast(catalog['categories'],category)
 
 # Funciones de consulta
+def videosporId(catalog,):
+
 
 def categoriaporID(name,catalog):
     """Recibe el nombre de una categoría y halla su respectivo ID
