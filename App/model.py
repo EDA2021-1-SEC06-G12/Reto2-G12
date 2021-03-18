@@ -43,15 +43,50 @@ los mismos.
 """
 
 # Construccion de modelos
-def initCatalog():
-    catalog= {'videos': None,
-            'categories': None}
-    
-    catalog['videos']=lt.newList(datastructure='ARRAY_LIST', cmpfunction=cmpInit)
-    catalog['categories'] = mp.newMap(35,
-                                   maptype='PROBING',
-                                   loadfactor=0.8,
-                                   comparefunction=None)
+def newCatalog():
+    """ Inicializa el catálogo de libros
+
+    Crea una lista vacia para guardar todos los libros
+
+    Se crean indices (Maps) por los siguientes criterios:
+    Autores
+    ID libros
+    Tags
+    Año de publicacion
+
+    Retorna el catalogo inicializado.
+    """
+    catalog = {'books': None,
+               'bookIds': None,
+               'authors': None,
+               'tags': None,
+               'tagIds': None,
+               'years': None}
+
+    """
+    Esta lista contiene todo los libros encontrados
+    en los archivos de carga.  Estos libros no estan
+    ordenados por ningun criterio.  Son referenciados
+    por los indices creados a continuacion.
+    """
+    catalog['books'] = lt.newList('SINGLE_LINKED', compareBookIds)
+
+    """
+    A continuacion se crean indices por diferentes criterios
+    para llegar a la informacion consultada.  Estos indices no
+    replican informacion, solo referencian los libros de la lista
+    creada en el paso anterior.
+    """
+
+    """
+    Este indice crea un map cuya llave es el identificador del libro
+    """
+    catalog['category'] = mp.newMap(10000,
+                                   maptype='CHAINING',
+                                   loadfactor=4.0,
+                                   comparefunction=compareMapcategory)
+
+    return catalog
 
 def addVideo(catalog,video):
     lt.addLast(catalog['videos'],video)
@@ -289,6 +324,8 @@ def cmpVideosbyTitleandLikes(video1,video2):
     elif video1['title']==video2['title']:
         return video1['likes']>video2['likes']
 
+def compareMapcategory():
+    None
 
 # Funciones de ordenamiento
 
