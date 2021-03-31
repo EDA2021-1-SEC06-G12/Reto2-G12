@@ -29,6 +29,7 @@ import config as cf
 import time
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
+from DISClib.DataStructures import mapentry as me
 from DISClib.Algorithms.Sorting import shellsort as shes
 from DISClib.Algorithms.Sorting import insertionsort as inss
 from DISClib.Algorithms.Sorting import selectionsort as sels
@@ -43,62 +44,158 @@ los mismos.
 """
 
 # Construccion de modelos
-def newCatalog():
-    """ Inicializa el catálogo de libros
-
-    Crea una lista vacia para guardar todos los libros
-
-    Se crean indices (Maps) por los siguientes criterios:
-    Autores
-    ID libros
-    Tags
-    Año de publicacion
-
-    Retorna el catalogo inicializado.
-    """
-    catalog = {'books': None,
-               'bookIds': None,
-               'authors': None,
-               'tags': None,
-               'tagIds': None,
-               'years': None}
+def initCatalog():
+    catalog = {'videos': lt.newList(datastructure='ARRAY_LIST', cmpfunction=cmpInit),
+               'categories': lt.newList(datastructure='ARRAY_LIST'),
+               'map_categories': None,
+               "map_categories_country": None,
+               "map_countries": None}
 
     """
-    Esta lista contiene todo los libros encontrados
-    en los archivos de carga.  Estos libros no estan
-    ordenados por ningun criterio.  Son referenciados
-    por los indices creados a continuacion.
+    Este indice crea un map cuya llave es la categoria
     """
-    catalog['books'] = lt.newList('SINGLE_LINKED', cmpInit)
-
+    catalog["map_categories"] = mp.newMap(numelements=4, maptype="CHAINING",loadfactor=4.0,comparefunction=compareMapCategory)
     """
-    A continuacion se crean indices por diferentes criterios
-    para llegar a la informacion consultada.  Estos indices no
-    replican informacion, solo referencian los libros de la lista
-    creada en el paso anterior.
+    Este indice crea un map cuya llave es (el país + categoria)
     """
-
+    catalog["map_categories_country"] = mp.newMap(numelements=64, maptype="CHAINING",loadfactor=4.0,comparefunction=compareMapCategory)
     """
-    Este indice crea un map cuya llave es el identificador del libro
+    Este indice crea un map cuya llave es el país 
     """
-    catalog['category'] = mp.newMap(10000,
-                                   maptype='CHAINING',
-                                   loadfactor=4.0,
-                                   comparefunction=compareMapcategory)
+    catalog["map_countries"] = mp.newMap(numelements=4, maptype="CHAINING",loadfactor=4.0,comparefunction=compareMapCategory)
 
     return catalog
+ 
 
-def addVideo(catalog,video):
-    lt.addLast(catalog['videos'],video)
+# Funciones para creacion de datos
+def newCategory_name(category_name):
+    entry = {'category_name': "", "videos": None}
+    entry['category_name'] = category_name
+    entry['videos'] = lt.newList('ARRAY_LIST', cmpVideosbyLikes)
+    return entry
 
+def newCategory_name_country(key):
+    entry = {'category_name_country': "", "videos": None}
+    entry['category_name_country'] = key
+    entry['videos'] = lt.newList('ARRAY_LIST', cmpVideosbyLikes)
+    return entry
+
+def newCountry(country):
+    entry = {'country': "", "videos": None}
+    entry['country'] = country
+    entry['videos'] = lt.newList('ARRAY_LIST', cmpVideosbyLikes)
+    return entry
+
+# Funciones para agregar informacion al catalogo
 def addCategory(catalog,category):
     lt.addLast(catalog['categories'],category)
 
+def addVideo(catalog,video):
+    lt.addLast(catalog['videos'],video)
+    addVideoCategory(catalog,video)
+    addVideoCountry(catalog,video)
+    addVideoCategoryCountry(catalog,video)
+    
+
+def addVideoCategoryCountry(catalog,video):
+    """
+    Esta funcion adiciona un video a la lista de videos que fueron trending en un país
+    y categoria específica. Esto se guarda en un map donde la llave es la combinación
+    país + nombre de la categoria y el valor es una lista de videos.
+    
+    Por ejemplo: FAKE LOVE fue trending en canada y es de categoria music
+    entonces se agrega a la lista de una llave dada por country + category_name.
+    """
+    map_categories_country = catalog["map_categories_country"]
+    category_id = video["category_id"]
+    country = video["country"].lower().strip()
+    category_name = category_name_dado_ID(video["category_id"],catalog).lower().strip()
+    key = country + category_name
+
+    existCategory_name_country = mp.contains(map_categories_country, key)
+
+    if existCategory_name_country:
+        entry = mp.get(map_categories_country, key)
+        entry = entry["value"]
+        lista = entry["videos"]
+        lt.addLast(lista,video)
+    else:
+        new_entry = newCategory_name_country(key)
+        mp.put(map_categories_country, key, new_entry)
+        lt.addLast(new_entry["videos"],video)
+    
+
+def addVideoCategory(catalog,video):
+    """
+    Esta función adiciona un video a la lista de videos a una lista de videos
+    de una categoria en especifica. Esto se guarda en un map donde la llave
+    es el nombre de la categoria y el valor es la lista de videos.
+    """
+    map_categories = catalog['map_categories']
+    category_id = video['category_id']
+    
+    if (category_id != ''):
+        category_name = category_name_dado_ID(video["category_id"],catalog)
+    else:
+        category_name = "NA"
+
+    existCategory_name = mp.contains(map_categories, category_name)
+
+    if existCategory_name:
+        entry = mp.get(map_categories, category_name)
+        entry = entry["value"]
+        lista = entry["videos"]
+        lt.addLast(lista,video)
+        
+    else:
+        category_entry = newCategory_name(category_name)
+        mp.put(map_categories, category_name, category_entry)
+        lt.addLast(category_entry["videos"],video)
+
+def addVideoCountry(catalog,video):
+    """
+    Esta función adiciona un video a la lista de videos a una lista de videos
+    de un país en especifico. Esto se guarda en un map donde la llave
+    es el nombre del país y el valor es la lista de videos.
+    """
+    map_countries = catalog['map_countries']
+    country = video['country']
+
+    existCountry = mp.contains(map_countries, country)
+
+    if existCountry:
+        entry = mp.get(map_countries, country)
+        entry = entry["value"]
+        lista = entry["videos"]
+        lt.addLast(lista,video)
+        
+    else:
+        country_entry = newCountry(country)
+        mp.put(map_countries, country, country_entry)
+        lt.addLast(country_entry["videos"],video)
+        
+        
+
+
 # Funciones de consulta
-def videosporId(catalog,):
+def category_name_dado_ID(id,catalog):
+    """Recibe el ID y halla el nombre de la categoria asociada
+        id: id de categoria
+        catalog: catalog
+    retorna:
+        str: nombre de la categoria"""
+    categorias = catalog["categories"]
+    v=it.newIterator(categorias)
+    while it.hasNext(v):
+        x = it.next(v)
+        if x["id"] == id:
+            return x["name"]
+    else:
+        return "NA"
 
 
-def categoriaporID(name,catalog):
+
+def ID_dado_category_name(name,catalog):
     """Recibe el nombre de una categoría y halla su respectivo ID
         name(str): nombre de la categoría
         catalog: catalog
@@ -121,6 +218,7 @@ def lporcyp(ID,pais,lista):
         lista: lista general
     retorna:
         lista: con sólo los elementos que cumplen con los parámetros"""
+
     v=it.newIterator(lista)
     final=lt.newList(datastructure='ARRAY_LIST')
     while it.hasNext(v):
@@ -139,6 +237,7 @@ def lporcategoria(ID,lista):
         lista: lista general
     retorna:
         lista: con sólo los elementos que cumplen con los parámetros"""
+
     final=lt.newList(datastructure='ARRAY_LIST')
     i=it.newIterator(lista)
     while it.hasNext(i):
@@ -291,8 +390,6 @@ def sacar(num,lista):
 
 
 
-# Funciones para creacion de datos
-
 
     
 
@@ -326,8 +423,15 @@ def cmpVideosbyTitleandLikes(video1,video2):
     elif video1['title']==video2['title']:
         return video1['likes']>video2['likes']
 
-def compareMapcategory():
-    None
+def compareMapCategory(category1,entry):
+    category_entry = me.getKey(entry)
+    if (category1 == category_entry):
+        return 0
+    elif (category1 > category_entry):
+        return 1
+    else:
+        return 0
+
 
 # Funciones de ordenamiento
 

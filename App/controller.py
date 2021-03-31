@@ -30,7 +30,8 @@ from DISClib.Algorithms.Sorting import shellsort as shes
 from DISClib.Algorithms.Sorting import mergesort as mrge
 from DISClib.Algorithms.Sorting import quicksort as quck
 from DISClib.Algorithms.Sorting import insertionsort as inss
-
+from DISClib.ADT import map as mp
+from DISClib.DataStructures import mapentry as me
 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
@@ -41,27 +42,52 @@ def initCatalog():
     return model.initCatalog()
 
 def loadData(catalog):
+    categoriesfile = cf.data_dir + "category-id.csv"
+    i_file = csv.DictReader(open(categoriesfile, encoding='utf-8'), delimiter='\t')
+    for category in i_file:
+        model.addCategory(catalog,category)
+
     videosfile = cf.data_dir + 'videos-large.csv'
     input_file = csv.DictReader(open(videosfile, encoding='utf-8'))
     for video in input_file:
         video["trending_date"] = datetime.strptime(video["trending_date"],"%y.%d.%m").date()
         model.addVideo(catalog, video)
-    
-    categoriesfile = cf.data_dir + "category-id.csv"
-    i_file = csv.DictReader(open(categoriesfile, encoding='utf-8'), delimiter='\t')
-    for category in i_file:
-        model.addCategory(catalog,category)
+    print("MAP_CAT_COUN:")
+    print(mp.keySet(catalog["map_categories_country"]))
+    print(mp.size(catalog["map_categories_country"]))
+    print("")
+    print("MAP_COUN:")
+    print(mp.keySet(catalog["map_countries"]))
+    print(mp.size(catalog["map_countries"]))
+    print("")
+    print("MAP_CAT:")
+    print(mp.keySet(catalog["map_categories"]))
+    print(mp.size(catalog["map_categories"]))
+    print("")
+
+
 
 def mejoresVideosPorViews(catalog, size):
     return model.sortVideos(catalog,size,cmpVideosbyViews)
 
 
 def R1(categoria,pais,num,catalog):
-    ID=model.categoriaporID(categoria,catalog)
+    """mapa = catalog["map_categories_country"]
+    key = pais+categoria
+    entrada = mp.get(mapa,key)
+    valor = entrada["value"]
+    l = valor["videos"]"""
+
+    
+    ID=model.ID_dado_category_name(categoria,catalog)
     if ID==None:
         return 'Categoría no válida'
     else:
-        l=model.lporcyp(ID,pais,catalog['videos'])
+        mapa = catalog["map_categories_country"]
+        key = pais+categoria
+        entrada = mp.get(mapa,key)
+        valor = entrada["value"]
+        l = valor["videos"]
         if l==None:
             return 'País no válido.'
         else:
@@ -77,7 +103,7 @@ def R1(categoria,pais,num,catalog):
                     n+=1
                     vid=it.next(i)
                     c=c+'\nPuesto '+str(n)+'\ntrending_date: '+str(vid['trending_date'])+'; title: '+vid['title']+'; channel_title: '+vid['channel_title']+'; publish_time: '+vid['publish_time']+'; views: '+vid['views']+'; likes: '+vid['likes']+ '; dislikes: '+vid['dislikes']+'\n'
-                return 'Información de los '+str(num)+' videos con más views en '+pais+' para la categoría de '+categoria+':\n'+c
+                return 'Información de los '+str(num)+' videos con más views en '+pais+' para la categoría de '+categoria+':\n'+c 
 
 
 def R2(pais,catalog):
@@ -91,7 +117,7 @@ def R2(pais,catalog):
 
 
 def R3(categoria,rep,catalog):
-    ID=model.categoriaporID(categoria,catalog)
+    ID=model.ID_dado_category_name(categoria,catalog)
     if ID==None:
         return 'Categoría no válida'
     else:

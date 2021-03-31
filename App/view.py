@@ -71,6 +71,7 @@ while True:
             x=it.next(i)
             print(str(x['id']) + " - " + str(x['name']))
         print('\n')
+        
         input('Presione enter para continuar')
 
 
