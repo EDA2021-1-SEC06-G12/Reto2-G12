@@ -54,15 +54,15 @@ def initCatalog():
     """
     Este indice crea un map cuya llave es la categoria
     """
-    catalog["map_categories"] = mp.newMap(numelements=4, maptype="CHAINING",loadfactor=2.0,comparefunction=compareMapCategory)
+    catalog["map_categories"] = mp.newMap(numelements=4, maptype="CHAINING",loadfactor=6.00,comparefunction=compareMapCategory)
     """
     Este indice crea un map cuya llave es (el país + categoria)
     """
-    catalog["map_categories_country"] = mp.newMap(numelements=64, maptype="CHAINING",loadfactor=2.0,comparefunction=compareMapCategory)
+    catalog["map_categories_country"] = mp.newMap(numelements=64, maptype="CHAINING",loadfactor=6.00,comparefunction=compareMapCategory)
     """
     Este indice crea un map cuya llave es el país 
     """
-    catalog["map_countries"] = mp.newMap(numelements=4, maptype="CHAINING",loadfactor=2.0,comparefunction=compareMapCategory)
+    catalog["map_countries"] = mp.newMap(numelements=4, maptype="CHAINING",loadfactor=6.00,comparefunction=compareMapCategory)
 
     return catalog
  
@@ -112,22 +112,22 @@ def addVideoCategoryCountry(catalog,video):
     Por ejemplo: FAKE LOVE fue trending en canada y es de categoria music
     entonces se agrega a la lista de una llave dada por canada + music.
     """
-    map_categories_country = catalog["map_categories_country"]
-    category_id = video["category_id"]
+    mapa = catalog["map_categories_country"]
+    ID = video["category_id"]
     country = video["country"].lower().strip()
-    category_name = category_name_dado_ID(video["category_id"],catalog).lower().strip()
-    key = country + category_name
+    category = category_name_dado_ID(ID,catalog).lower().strip()
+    key = country,category
 
-    existCategory_name_country = mp.contains(map_categories_country, key)
+    mpexiste = mp.contains(mapa, key)
 
-    if existCategory_name_country:
-        entry = mp.get(map_categories_country, key)
+    if mpexiste:
+        entry = mp.get(mapa, key)
         entry = entry["value"]
         lista = entry["videos"]
         lt.addLast(lista,video)
     else:
         new_entry = newCategory_name_country(key)
-        mp.put(map_categories_country, key, new_entry)
+        mp.put(mapa, key, new_entry)
         lt.addLast(new_entry["videos"],video)
     
 
