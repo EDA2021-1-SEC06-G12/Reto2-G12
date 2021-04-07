@@ -23,6 +23,9 @@
 import config as cf
 import model
 import csv
+import time
+import tracemalloc
+
 from DISClib.ADT import list as lt
 from DISClib.DataStructures import listiterator as it
 from datetime import datetime
@@ -42,6 +45,13 @@ def initCatalog():
     return model.initCatalog()
 
 def loadData(catalog):
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
     categoriesfile = cf.data_dir + "category-id.csv"
     i_file = csv.DictReader(open(categoriesfile, encoding='utf-8'), delimiter='\t')
     for category in i_file:
@@ -52,6 +62,17 @@ def loadData(catalog):
     for video in input_file:
         video["trending_date"] = datetime.strptime(video["trending_date"],"%y.%d.%m").date()
         model.addVideo(catalog, video)
+    
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+
+    return delta_time, delta_memory
+
+    """
     print("MAP_CAT_COUN:")
     print(mp.keySet(catalog["map_categories_country"]))
     print(mp.size(catalog["map_categories_country"]))
@@ -64,6 +85,7 @@ def loadData(catalog):
     print(mp.keySet(catalog["map_categories"]))
     print(mp.size(catalog["map_categories"]))
     print("")
+    """
 
 
 
@@ -71,14 +93,7 @@ def mejoresVideosPorViews(catalog, size):
     return model.sortVideos(catalog,size,cmpVideosbyViews)
 
 
-def R1(categoria,pais,num,catalog):
-    """mapa = catalog["map_categories_country"]
-    key = pais+categoria
-    entrada = mp.get(mapa,key)
-    valor = entrada["value"]
-    l = valor["videos"]"""
-
-    
+def R1(categoria,pais,num,catalog): 
     ID=model.ID_dado_category_name(categoria,catalog)
     if ID==None:
         return 'Categoría no válida'
@@ -107,13 +122,14 @@ def R1(categoria,pais,num,catalog):
 
 
 def R2(pais,catalog):
-    l1 = model.lporpais(pais,catalog['videos'])
-    if l1==None:
-        return 'No hay información para este país.'
-    else:
-        l2 = model.sortVideos(l1,lt.size(l1),model.cmpVideosbyTitleandDate)[1]
-        tupla=model.maxrep('title',l2)
-        return '\nInformación del video trending por más días en '+pais+':\ntitle: '+tupla[0]+'; channel_title: '+tupla[1]+'; country: '+tupla[3]+'; días: '+str(tupla[4])
+    entry = mp.get(catalog["map_countries"],pais)
+    entry = entry["value"]
+    l1 = entry["videos"]
+    print(lt.size(l1))
+    tabla = model.tabla_mas_trending(l1)
+    mas_trending = model.mas_trending(tabla)
+    info = lt.getElement(mas_trending[2],1)
+    return '\nInformación del video trending por más días en '+pais+':\ntitle: '+lt.getElement(info,2)+'; channel_title: '+lt.getElement(info,3)+'; country: '+ pais+'; días: '+str(mas_trending[1])
 
 
 def R3(categoria,rep,catalog):
@@ -158,3 +174,38 @@ def R4(tag,pais,num,catalog):
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
+
+
+# ======================================
+# Funciones para medir tiempo y memoria
+# ======================================
+
+
+def getTime():
+    """
+    devuelve el instante tiempo de procesamiento en milisegundos
+    """
+    return float(time.perf_counter()*1000)
+
+
+def getMemory():
+    """
+    toma una muestra de la memoria alocada en instante de tiempo
+    """
+    return tracemalloc.take_snapshot()
+
+
+def deltaMemory(start_memory, stop_memory):
+    """
+    calcula la diferencia en memoria alocada del programa entre dos
+    instantes de tiempo y devuelve el resultado en bytes (ej.: 2100.0 B)
+    """
+    memory_diff = stop_memory.compare_to(start_memory, "filename")
+    delta_memory = 0.0
+
+    # suma de las diferencias en uso de memoria
+    for stat in memory_diff:
+        delta_memory = delta_memory + stat.size_diff
+    # de Byte -> kByte
+    delta_memory = delta_memory/1024.0
+    return delta_memory

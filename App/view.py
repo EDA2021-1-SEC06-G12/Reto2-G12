@@ -61,7 +61,7 @@ while True:
     if int(inputs[0]) == 1:
         print("\nCargando información de los archivos...")
         catalog = controller.initCatalog()
-        controller.loadData(catalog)
+        answer = controller.loadData(catalog)
         print("\nSe cargaron " + str(lt.size(catalog['videos'])) + " datos de video y " + str(lt.size(catalog['categories'])) + " de categorías.")
         v=lt.firstElement(catalog['videos'])
         print("\nInformación del primer video cargado \n" +"Título: "+v['title']+"\nTítulo del canal: "+v['channel_title']+"\nTrending date: "+str(v['trending_date'])+"\nPaís: "+v['country']+"\nVistas: "+v['views']+ "\nLikes: "+v['likes']+"\nDislikes: "+v['dislikes']+'\n')
@@ -71,13 +71,15 @@ while True:
             x=it.next(i)
             print(str(x['id']) + " - " + str(x['name']))
         print('\n')
-        
+        print("Tiempo [ms]: ", f"{answer[0]:.3f}", "  ||  ",
+              "Memoria [kB]: ", f"{answer[1]:.3f}")
+        print('\n') 
         input('Presione enter para continuar')
 
 
     elif int(inputs[0])==2:
-        categoria=input('Ingrese la categoría: ')
-        pais=input('Ingrese el país: ')
+        categoria=(input('Ingrese la categoría: ')).lower()
+        pais=(input('Ingrese el país: ')).lower()
         num=int(input('Ingrese el número de videos: '))
         v=controller.R1(categoria,pais,num,catalog)
         print('\n'+v+'\n')
@@ -85,7 +87,7 @@ while True:
 
     
     elif int(inputs[0])==3:
-        pais=input('Ingrese el país: ')
+        pais=input('Ingrese el país: ').lower()
         x=controller.R2(pais,catalog)
         print('\n'+x+'\n')
         input('Presione enter para continuar')
