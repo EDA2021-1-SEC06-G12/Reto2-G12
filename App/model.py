@@ -54,15 +54,15 @@ def initCatalog():
     """
     Este indice crea un map cuya llave es la categoria
     """
-    catalog["map_categories"] = mp.newMap(numelements=4, maptype="CHAINING",loadfactor=6.00,comparefunction=compareMapCategory)
+    catalog["map_categories"] = mp.newMap(numelements=4, maptype="PROBING",loadfactor=0.50,comparefunction=compareMapCategory)
     """
     Este indice crea un map cuya llave es (el país + categoria)
     """
-    catalog["map_categories_country"] = mp.newMap(numelements=64, maptype="CHAINING",loadfactor=6.00,comparefunction=compareMapCategory)
+    catalog["map_categories_country"] = mp.newMap(numelements=64, maptype="PROBING",loadfactor=0.50,comparefunction=compareMapCategory)
     """
     Este indice crea un map cuya llave es el país 
     """
-    catalog["map_countries"] = mp.newMap(numelements=4, maptype="CHAINING",loadfactor=6.00,comparefunction=compareMapCategory)
+    catalog["map_countries"] = mp.newMap(numelements=4, maptype="PROBING",loadfactor=0.50,comparefunction=compareMapCategory)
 
     return catalog
  
