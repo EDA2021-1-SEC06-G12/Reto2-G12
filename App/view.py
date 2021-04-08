@@ -19,8 +19,6 @@
  * You should have received a copy of the GNU General Public License
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
-
-
 import config as cf
 import sys
 import controller
@@ -28,6 +26,8 @@ import model
 from DISClib.ADT import list as lt
 from DISClib.DataStructures import listiterator as it
 assert cf
+from DISClib.DataStructures import mapentry as me
+from DISClib.ADT import map as mp
 
 default_time = 1000
 sys.setrecursionlimit(default_time*10)
@@ -74,6 +74,9 @@ while True:
         print("Tiempo [ms]: ", f"{answer[0]:.3f}", "  ||  ",
               "Memoria [kB]: ", f"{answer[1]:.3f}")
         print('\n') 
+        miaus=mp.get(catalog['map_ID'],'10')
+        print(miaus)
+
         input('Presione enter para continuar')
 
 
@@ -108,6 +111,15 @@ while True:
         x=controller.R4(tag,pais,num,catalog)
         print('\n'+x+'\n')
         input('Presione enter para continuar')
+
+    elif int(inputs[0])==9:
+        miau=input('key: ')
+        guau=lt.newList()
+        x=me.newMapEntry(miau,guau)
+        print(x)
+        lista=(x['value'])
+        lt.addLast(lista,lt.firstElement(catalog['videos']))
+        print(x)
 
     else:
         sys.exit(0)

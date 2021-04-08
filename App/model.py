@@ -47,28 +47,28 @@ los mismos.
 def initCatalog():
     catalog = {'videos': lt.newList(datastructure='ARRAY_LIST', cmpfunction=cmpInit),
                'categories': lt.newList(datastructure='ARRAY_LIST'),
-               'map_categories': None,
+               'map_ID': None,
                "map_categories_country": None,
                "map_countries": None}
 
     """
     Este indice crea un map cuya llave es la categoria
     """
-    catalog["map_categories"] = mp.newMap(numelements=4, maptype="PROBING",loadfactor=0.50,comparefunction=compareMapCategory)
+    catalog['map_ID'] = mp.newMap(numelements=23, maptype="PROBING",loadfactor=0.50,comparefunction=compareMapCategory)
     """
     Este indice crea un map cuya llave es (el país + categoria)
     """
-    catalog["map_categories_country"] = mp.newMap(numelements=64, maptype="PROBING",loadfactor=0.50,comparefunction=compareMapCategory)
+    catalog['map_categories_country'] = mp.newMap(numelements=64, maptype="PROBING",loadfactor=0.50,comparefunction=compareMapCategory)
     """
     Este indice crea un map cuya llave es el país 
     """
-    catalog["map_countries"] = mp.newMap(numelements=4, maptype="PROBING",loadfactor=0.50,comparefunction=compareMapCategory)
+    catalog['map_countries'] = mp.newMap(numelements=4, maptype="PROBING",loadfactor=0.50,comparefunction=compareMapCategory)
 
     return catalog
  
 
 # Funciones para creacion de datos
-def newCategory_name(category_name):
+"""def newCategory_name(category_name):
     entry = {'category_name': "", "videos": None}
     entry['category_name'] = category_name
     entry['videos'] = lt.newList('ARRAY_LIST', cmpVideosbyLikes)
@@ -90,7 +90,7 @@ def newVideo_fecha(title):
     entry = {'title': None, "fechasyvarios": None}
     entry['title'] = title
     entry['fechasyvarios'] = lt.newList('ARRAY_LIST')
-    return entry
+    return entry"""
 
 # Funciones para agregar informacion al catalogo
 def addCategory(catalog,category):
@@ -98,20 +98,75 @@ def addCategory(catalog,category):
 
 def addVideo(catalog,video):
     lt.addLast(catalog['videos'],video)
-    addVideoCategory(catalog,video)
+    #addvidbycc(catalog,video)
+    addvidbyid(catalog,video)
+    #addvidbycountry(catalog,video)
+    ##addVideoCategory(catalog,video)
     #addVideoCountry(catalog,video)
     #addVideoCategoryCountry(catalog,video)
     
 
-def addVideoCategoryCountry(catalog,video):
-    """
+
+def addvidbycc(catalog,video):
+    mapa=catalog['map_categories_country']
+    ID=video['category_id']
+    country=video['country'].lower().strip()
+    category=category_name_dado_ID(ID,catalog).lower().strip()
+    key=country,category
+
+    mpexiste=mp.contains(mapa,key)
+
+    if mpexiste:
+        entry=mp.get(mapa,key)
+        lista=me.getValue(entry)
+        lt.addLast(lista,video)
+    else:
+        lista=lt.newList(datastructure='ARRAY_LIST')
+        lt.addLast(lista,video)
+        mp.put(mapa,key,lista)
+
+    
+def addvidbyid(catalog,video):
+    mapa=catalog['map_ID']
+    key=video['category_id']
+
+    mpexiste=mp.contains(mapa,key)
+
+    if mpexiste:
+        entry=mp.get(mapa,key)
+        lista=entry['value']
+        lt.addLast(lista,video)
+    else:
+        lista=lt.newList(datastructure='ARRAY_LIST')
+        lt.addLast(lista,video)
+        mp.put(mapa,key,lista)
+
+    
+def addvidbycountry(catalog,video):
+    mapa=catalog['map_countries']
+    country=video['country'].lower().strip()
+    key=country
+
+    mpexiste=mp.contains(mapa,key)
+
+    if mpexiste:
+        entry=mp.get(mapa,key)
+        lista=entry['value']
+        lt.addLast(lista,video)
+    else:
+        lista=lt.newList(datastructure='ARRAY_LIST')
+        lt.addLast(lista,video)
+        mp.put(mapa,key,lista)
+
+
+
+"""def addVideoCategoryCountry(catalog,video):
     Esta funcion adiciona un video a la lista de videos que fueron trending en un país
     y categoria específica. Esto se guarda en un map donde la llave es la combinación
     país + nombre de la categoria y el valor es una lista de videos.
     
     Por ejemplo: FAKE LOVE fue trending en canada y es de categoria music
     entonces se agrega a la lista de una llave dada por canada + music.
-    """
     mapa = catalog["map_categories_country"]
     ID = video["category_id"]
     country = video["country"].lower().strip()
@@ -132,11 +187,11 @@ def addVideoCategoryCountry(catalog,video):
     
 
 def addVideoCategory(catalog,video):
-    """
+
     Esta función adiciona un video a la lista de videos a una lista de videos
     de una categoria en especifica. Esto se guarda en un map donde la llave
     es el nombre de la categoria y el valor es la lista de videos.
-    """
+
     map_categories = catalog['map_categories']
     category_id = video['category_id']
     
@@ -159,11 +214,11 @@ def addVideoCategory(catalog,video):
         lt.addLast(category_entry["videos"],video)
 
 def addVideoCountry(catalog,video):
-    """
+
     Esta función adiciona un video a la lista de videos a una lista de videos
     de un país en especifico. Esto se guarda en un map donde la llave
     es el nombre del país y el valor es la lista de videos.
-    """
+
     map_countries = catalog['map_countries']
     country = video['country'].strip().lower()
     print(country)
@@ -178,7 +233,7 @@ def addVideoCountry(catalog,video):
     else:
         country_entry = newCountry(country)
         mp.put(map_countries, country, country_entry)
-        lt.addLast(country_entry["videos"],video)
+        lt.addLast(country_entry["videos"],video)"""
         
         
 
@@ -458,6 +513,39 @@ def sacar(num,lista):
         return None
 
 
+
+
+def viewsporID(categoria,catalog):
+    mapa=catalog['map_ID']
+    ID=ID_dado_category_name(categoria,catalog)
+    entry=mp.get(mapa,ID)
+    final=mp.newMap()
+    llaves=mp.keySet(final)
+    if entry!=None:
+        lista=me.getValue(entry)
+        i=it.newIterator(lista)
+        while it.hasNext(i):
+            video=it.next(i)
+            title=video['title']
+            fecha=video['trending_date']
+            ent=mp.get(final,title)
+            if ent!=None:
+                info=me.getValue(ent)
+                if lt.isPresent(info,video[fecha])==0:
+                    lt.addLast(info,video)
+            else:
+                info=lt.newList()
+                lt.addLast(info,fecha)
+                mp.put(final,title,info)
+    
+    llaves=mp.keySet(final)
+    valores=mp.valueSet(final)
+    v=1
+    mayor=1
+    while i<=lt.size(valores)
+        l=lt.getElement(valores,i)
+        if lt.size(l)>mayor:
+            mayor=lt.size(l)
 
 
     

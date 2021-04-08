@@ -57,7 +57,7 @@ def loadData(catalog):
     for category in i_file:
         model.addCategory(catalog,category)
 
-    videosfile = cf.data_dir + 'videos-large.csv'
+    videosfile = cf.data_dir + 'videos-small.csv'
     input_file = csv.DictReader(open(videosfile, encoding='utf-8'))
     for video in input_file:
         video["trending_date"] = datetime.strptime(video["trending_date"],"%y.%d.%m").date()
@@ -169,6 +169,9 @@ def R4(tag,pais,num,catalog):
             return 'Información de los '+str(num)+' videos con más views en '+pais+' con el tag de '+tag+':\n'+c
 
 
+
+
+    
 # Funciones para la carga de datos
 
 # Funciones de ordenamiento
