@@ -182,25 +182,6 @@ def idporcategory(name,catalog):
         i+=1
 
 
-def sacar(num,lista):
-    if num<=lt.size(lista):
-        titulos=lt.newList(datastructure="ARRAY_LIST")
-        final=lt.newList(datastructure="ARRAY_LIST")
-        primero=lt.firstElement(lista)
-        lt.addLast(titulos,primero['title'])
-        lt.addLast(final,primero)
-        i=it.newIterator(lista)
-        while it.hasNext(i) and lt.size(final)<num:
-            v=it.next(i)
-            tit = v["title"]
-            x = lt.isPresent(titulos,tit)
-            if x == 0:
-                lt.addLast(titulos,v['title'])
-                lt.addLast(final,v)
-        return final
-    else:
-        return None
-
 
 ##########
 

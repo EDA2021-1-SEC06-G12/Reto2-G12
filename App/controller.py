@@ -57,7 +57,7 @@ def loadData(catalog):
     for category in i_file:
         model.addCategory(catalog,category)
 
-    videosfile = cf.data_dir + 'videos-large.csv'
+    videosfile = cf.data_dir + 'videos-small.csv'
     input_file = csv.DictReader(open(videosfile, encoding='utf-8'))
     for video in input_file:
         video["trending_date"] = datetime.strptime(video["trending_date"],"%y.%d.%m").date()
@@ -92,7 +92,7 @@ def req4(catalog,pais,tag,n):
         while i<=n:
             x=model.diasolikes(catalog,mapa,'likes')
             info=x[1]
-            print ('title: '+info['title']+' || channel_title: '+info['channel_title']+' || publish_time: '+info['publish_time']+' || views: '+info['views']+'|| likes: '+str(x[2])+' || dilikes: '+info['dislikes']+'\ntags: '+info['tags']+'\n')
+            print ('title: '+info['title']+' || channel_title: '+info['channel_title']+' || publish_time: '+info['publish_time']+' || views: '+info['views']+'|| likes: '+str(x[2])+' || dislikes: '+info['dislikes']+'\ntags: '+info['tags']+'\n')
             mp.remove(mapa,x[0])
             i+=1
 
