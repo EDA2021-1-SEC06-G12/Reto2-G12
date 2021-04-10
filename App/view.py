@@ -74,10 +74,9 @@ while True:
         print("Tiempo [ms]: ", f"{answer[0]:.3f}", "  ||  ",
               "Memoria [kB]: ", f"{answer[1]:.3f}")
         print('\n') 
-        miaus=mp.get(catalog['map_ID'],'10')
-        print(miaus)
-
+        print(mp.keySet(catalog['map_ID']))
         input('Presione enter para continuar')
+
 
 
     elif int(inputs[0])==2:
@@ -112,14 +111,11 @@ while True:
         print('\n'+x+'\n')
         input('Presione enter para continuar')
 
+    elif int(inputs[0])==8:
+        (model.mayortrending(catalog['map_ID'],'26',catalog))
+
     elif int(inputs[0])==9:
-        miau=input('key: ')
-        guau=lt.newList()
-        x=me.newMapEntry(miau,guau)
-        print(x)
-        lista=(x['value'])
-        lt.addLast(lista,lt.firstElement(catalog['videos']))
-        print(x)
+        model.suicidio(catalog['map_countries'],'usa')
 
     else:
         sys.exit(0)

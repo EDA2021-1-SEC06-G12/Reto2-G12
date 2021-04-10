@@ -99,8 +99,8 @@ def addCategory(catalog,category):
 def addVideo(catalog,video):
     lt.addLast(catalog['videos'],video)
     #addvidbycc(catalog,video)
-    addvidbyid(catalog,video)
-    #addvidbycountry(catalog,video)
+    #addvidbyid(catalog,video)
+    addvidbycountry(catalog,video)
     ##addVideoCategory(catalog,video)
     #addVideoCountry(catalog,video)
     #addVideoCategoryCountry(catalog,video)
@@ -127,6 +127,7 @@ def addvidbycc(catalog,video):
 
     
 def addvidbyid(catalog,video):
+    lista=catalog['videos']
     mapa=catalog['map_ID']
     key=video['category_id']
 
@@ -145,7 +146,7 @@ def addvidbyid(catalog,video):
 def addvidbycountry(catalog,video):
     mapa=catalog['map_countries']
     country=video['country'].lower().strip()
-    key=country
+    key=country.lower()
 
     mpexiste=mp.contains(mapa,key)
 
@@ -514,38 +515,68 @@ def sacar(num,lista):
 
 
 
-
-def viewsporID(categoria,catalog):
-    mapa=catalog['map_ID']
-    ID=ID_dado_category_name(categoria,catalog)
-    entry=mp.get(mapa,ID)
-    final=mp.newMap()
-    llaves=mp.keySet(final)
+def mayortrending(mapa,parametro,catalog):
+    entry=mp.get(mapa,parametro)
+    final=mp.newMap(numelements=23, maptype="PROBING",loadfactor=0.50,comparefunction=compareMapTitle)
     if entry!=None:
-        lista=me.getValue(entry)
-        i=it.newIterator(lista)
+        videos=me.getValue(entry)
+        i=it.newIterator(videos)
         while it.hasNext(i):
-            video=it.next(i)
-            title=video['title']
-            fecha=video['trending_date']
-            ent=mp.get(final,title)
-            if ent!=None:
-                info=me.getValue(ent)
-                if lt.isPresent(info,video[fecha])==0:
-                    lt.addLast(info,video)
+            vid=it.next(i)
+            titulo=vid['title']
+            fecha=vid['trending_date']
+            if lt.isPresent(mp.keySet(final),titulo)==0:
+                fechas=lt.newList(datastructure='ARRAY_LIST')
+                lt.addLast(fechas,fecha)
+                mp.put(final,titulo,fechas)
             else:
-                info=lt.newList()
-                lt.addLast(info,fecha)
-                mp.put(final,title,info)
-    
-    llaves=mp.keySet(final)
-    valores=mp.valueSet(final)
-    v=1
-    mayor=1
-    while i<=lt.size(valores)
-        l=lt.getElement(valores,i)
-        if lt.size(l)>mayor:
-            mayor=lt.size(l)
+                entrada=mp.get(final,titulo)
+                fechas=me.getValue(entrada)
+                if lt.isPresent(fechas,fecha)==0:
+                    lt.addLast(fechas,fecha)
+
+        m=mp.keySet(final)
+        print(lt.size(m))
+
+    else:
+        return None
+
+
+def suicidio(mapa,pais):
+    mapa=mp.get(mapa,pais)
+    videos=mapa['value']
+    final=mp.newMap(numelements=lt.size(videos)*20, maptype="PROBING",loadfactor=4.0,comparefunction=compareMapTitle)
+    print(lt.size(videos))
+
+    i=it.newIterator(videos)
+    m=0
+
+    while it.hasNext(i):
+        m+=1
+        vid=it.next(i)
+        title=vid['title']
+        mp.put(final,title,1)
+ #       if lt.isPresent(mp.keySet(final),title)==0:
+
+    print('MM: '+str(m))
+    print(mp.size(final))
+
+
+
+"""   mayor=1
+    entry=me.newMapEntry('','')
+    i=it.newIterator(llaves)
+    while it.hasNext(i):
+        print(it.next(i))
+        l=me.getValue(ent)
+        dias=lt.getElement(l,2)
+        if dias>mayor:
+            mayor=dias
+            entry=me.newMapEntry(llave,lt.getElement(l,1))
+
+    return entry"""
+
+
 
 
     
