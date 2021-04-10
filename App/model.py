@@ -145,8 +145,7 @@ def titleporidc(catalog,lista):
     return mapa
 
 
-def diasolikes(catalog,lista,diasolikes):
-    mapa=titleporidc(catalog,lista)
+def diasolikes(catalog,mapa,diasolikes):
     info=None
     mayor=0
     llaves=mp.keySet(mapa)
@@ -155,21 +154,16 @@ def diasolikes(catalog,lista,diasolikes):
         llave=it.next(i)
         entry=mp.get(mapa,llave)
         value=me.getValue(entry)
-        m=value[diasolikes]
+        m=int(value[diasolikes])
         if m>mayor:
             mayor=m
             info=value['info']
-    tit=info['title']
-    channel_title=info['channel_title']
-    country=info['country']
-    category_id=info['category_id']
-    dias=mayor    
-    return tit,channel_title,country,category_id,dias
+    return info['title'],info,mayor
 
 
 def tags(catalog,pais,tag):
     videos=getvidsby(catalog,'countries',pais)
-    final=lt.newList()
+    final=lt.newList(datastructure='SINGLE_LINKED')
     i=it.newIterator(videos)
     while it.hasNext(i):
         vid=it.next(i)
@@ -186,9 +180,6 @@ def idporcategory(name,catalog):
         if name.lower() in (c['name']).lower():
             return c['id']
         i+=1
-
-def likes(catalog,pais,tag,n):
-    mapa=titleporidc(catalog,tags(catalog,pais,tag))
 
 
 def sacar(num,lista):

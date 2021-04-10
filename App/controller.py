@@ -74,26 +74,27 @@ def loadData(catalog):
 
 
 def req2(catalog,country):
-    x=model.diasolikes(catalog,(model.getvidsby(catalog,'countries',country)),'dias')
-    return 'title: '+x[0]+' || channel_title: '+x[1]+' || country: '+str(x[2])+' || días: '+str(x[4])
+    mapa=model.titleporidc(catalog,model.getvidsby(catalog,'countries',country))
+    x=model.diasolikes(catalog,mapa,'dias')
+    info=x[1]
+    return 'title: '+info['title']+' || channel_title: '+info['channel_title']+' || country: '+info['country']+' || días: '+str(x[2])
 
 def req3(catalog,categoria):
     ide=model.idporcategory(categoria,catalog)
-    x=model.diasolikes(catalog,(model.getvidsby(catalog,'ids',ide)),'dias')
-    return 'title: '+x[0]+' || channel_title: '+x[1]+' || category_id: '+str(x[3])+' || días: '+str(x[4])
+    mapa=model.titleporidc(catalog,model.getvidsby(catalog,'ids',ide))
+    x=model.diasolikes(catalog,mapa,'dias')
+    info=x[1]
+    return 'title: '+info['title']+' || channel_title: '+info['channel_title']+' || category_id: '+str(info['category_id'])+' || días: '+str(x[2])
 
 def req4(catalog,pais,tag,n):
-    lista=model.tags(catalog,pais,tag)
-    ordered=model.sortVideos(lista,lt.size(lista),model.cmpVideosbyLikes)[1]
-    final=model.sacar(n,ordered)
-    cadena=''
-    i=it.newIterator(final)
-    n=0
-    while it.hasNext(i):
-        n+=1
-        v=it.next(i)
-        cadena=cadena+'\nPuesto '+str(n)+'\ntitle: '+v['title']+' || channel_title: '+v['channel_title']+' || publish_time: '+str(v['publish_time'])+' || views: '+str(v['views'])+' || likes: '+str(v['likes'])+' || dislikes: '+str(v['dislikes'])+'\ntags: '+v['tags']+'\n'
-    return cadena
+        mapa=model.titleporidc(catalog,model.tags(catalog,pais,tag))
+        i=1
+        while i<=n:
+            x=model.diasolikes(catalog,mapa,'likes')
+            info=x[1]
+            print ('title: '+info['title']+' || channel_title: '+info['channel_title']+' || publish_time: '+info['publish_time']+' || views: '+info['views']+'|| likes: '+str(x[2])+' || dilikes: '+info['dislikes']+'\ntags: '+info['tags']+'\n')
+            mp.remove(mapa,x[0])
+            i+=1
 
 #########
 
@@ -123,56 +124,6 @@ def R1(categoria,pais,num,catalog):
                     vid=it.next(i)
                     c=c+'\nPuesto '+str(n)+'\ntrending_date: '+str(vid['trending_date'])+'; title: '+vid['title']+'; channel_title: '+vid['channel_title']+'; publish_time: '+vid['publish_time']+'; views: '+vid['views']+'; likes: '+vid['likes']+ '; dislikes: '+vid['dislikes']+'\n'
                 return 'Información de los '+str(num)+' videos con más views en '+pais+' para la categoría de '+categoria+':\n'+c 
-
-
-def R2(pais,catalog):
-    entry = mp.get(catalog["map_countries"],pais)
-    entry = entry["value"]
-    l1 = entry["videos"]
-    print(lt.size(l1))
-    tabla = model.tabla_mas_trending(l1)
-    mas_trending = model.mas_trending(tabla)
-    info = lt.getElement(mas_trending[2],1)
-    return '\nInformación del video trending por más días en '+pais+':\ntitle: '+lt.getElement(info,2)+'; channel_title: '+lt.getElement(info,3)+'; country: '+ pais+'; días: '+str(mas_trending[1])
-
-
-def R3(categoria,rep,catalog):
-    ID=model.ID_dado_category_name(categoria,catalog)
-    if ID==None:
-        return 'Categoría no válida'
-    else:
-        l1=model.lporcategoria(ID,catalog['videos'])
-        l2=model.sortVideos(l1,lt.size(l1),model.cmpVideosbyTitleandDate)[1]
-        if rep==1:
-            tupla=model.maxnorep('title',l2)
-        elif rep==0:
-            tupla=model.maxrep('title',l2)
-        else:
-            return 'La opción ingresada (diferente a 0 y 1) no es válida'
-
-        return '\nInformación del video trending por más días para la categoría de '+categoria+':\ntitle: '+tupla[0]+'; channel_title: '+tupla[1]+'; category_id: '+tupla[2]+'; días: '+str(tupla[4])
-    
-
-def R4(tag,pais,num,catalog):
-    l1=model.lportyp(tag,pais,catalog['videos'])
-    if l1==None:
-        return 'No hay información para el país y/o tag ingresados.'
-    else:
-        orde=model.sortVideos(l1,lt.size(l1),model.cmpVideosbyLikes)[1]
-        final=model.sacar(num,orde)
-        if final==None:
-            return 'El número ingresado excede la cantidad de videos que cumplen con los requisitos.'
-        else:
-            c=''
-            i=it.newIterator(final)
-            n=0
-            while it.hasNext(i):
-                n+=1
-                v=it.next(i)
-                c=c+'\nPuesto '+str(n)+'\ntitle: '+v['title']+'; channel_title: '+v['channel_title']+'; publish_time: '+str(v['publish_time'])+'; views: '+str(v['views'])+'; likes: '+str(v['likes'])+'; dislikes: '+str(v['dislikes'])+'; tags: '+v['tags']+'\n'
-            return 'Información de los '+str(num)+' videos con más views en '+pais+' con el tag de '+tag+':\n'+c
-
-
 
 
     
