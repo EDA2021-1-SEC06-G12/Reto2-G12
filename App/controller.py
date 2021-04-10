@@ -74,12 +74,12 @@ def loadData(catalog):
 
 
 def req2(catalog,country):
-    x=model.dias(catalog,model.getvidsby(catalog,'countries',country))
+    x=model.diasolikes(catalog,(model.getvidsby(catalog,'countries',country)),'dias')
     return 'title: '+x[0]+' || channel_title: '+x[1]+' || country: '+str(x[2])+' || días: '+str(x[4])
 
 def req3(catalog,categoria):
     ide=model.idporcategory(categoria,catalog)
-    x=model.dias(catalog,model.getvidsby(catalog,'ids',ide))
+    x=model.diasolikes(catalog,(model.getvidsby(catalog,'ids',ide)),'dias')
     return 'title: '+x[0]+' || channel_title: '+x[1]+' || category_id: '+str(x[3])+' || días: '+str(x[4])
 
 def req4(catalog,pais,tag,n):

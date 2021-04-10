@@ -145,7 +145,7 @@ def titleporidc(catalog,lista):
     return mapa
 
 
-def dias(catalog,lista):
+def diasolikes(catalog,lista,diasolikes):
     mapa=titleporidc(catalog,lista)
     info=None
     mayor=0
@@ -155,9 +155,9 @@ def dias(catalog,lista):
         llave=it.next(i)
         entry=mp.get(mapa,llave)
         value=me.getValue(entry)
-        dias=value['dias']
-        if dias>mayor:
-            mayor=dias
+        m=value[diasolikes]
+        if m>mayor:
+            mayor=m
             info=value['info']
     tit=info['title']
     channel_title=info['channel_title']
@@ -165,6 +165,7 @@ def dias(catalog,lista):
     category_id=info['category_id']
     dias=mayor    
     return tit,channel_title,country,category_id,dias
+
 
 def tags(catalog,pais,tag):
     videos=getvidsby(catalog,'countries',pais)
