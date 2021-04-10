@@ -80,7 +80,7 @@ def req1(catalog,country,category,n):
     while i<=n:
         x=model.dlv(catalog,mapa,'views')
         info=x[1]
-        print ('trending_date: '+str(info['trending_date'])+' || title: '+info['title']+' || channel_title: '+info['channel_title']+' || publish_time: '+info['publish_time']+' || views: '+info['views']+'|| likes: '+str(x[2])+' || dislikes: '+info['dislikes']+'\n')
+        print ('\ntrending_date: '+str(info['trending_date'])+' || title: '+info['title']+' || channel_title: '+info['channel_title']+' || publish_time: '+info['publish_time']+' || views: '+info['views']+'|| likes: '+str(x[2])+' || dislikes: '+info['dislikes']+'\n')
         mp.remove(mapa,x[0])
         i+=1
 
@@ -104,38 +104,11 @@ def req4(catalog,pais,tag,n):
         while i<=n:
             x=model.dlv(catalog,mapa,'likes')
             info=x[1]
-            print ('title: '+info['title']+' || channel_title: '+info['channel_title']+' || publish_time: '+info['publish_time']+' || views: '+info['views']+'|| likes: '+str(x[2])+' || dislikes: '+info['dislikes']+'\ntags: '+info['tags']+'\n')
+            print ('\ntitle: '+info['title']+' || channel_title: '+info['channel_title']+' || publish_time: '+info['publish_time']+' || views: '+info['views']+'|| likes: '+str(x[2])+' || dislikes: '+info['dislikes']+'\ntags: '+info['tags']+'\n')
             mp.remove(mapa,x[0])
             i+=1
 
 #########
-
-def R1(categoria,pais,num,catalog): 
-    ID=model.ID_dado_category_name(categoria,catalog)
-    if ID==None:
-        return 'Categoría no válida'
-    else:
-        mapa = catalog["map_categories_country"]
-        key = pais+categoria
-        entrada = mp.get(mapa,key)
-        valor = entrada["value"]
-        l = valor["videos"]
-        if l==None:
-            return 'País no válido.'
-        else:
-            l2=model.sortVideos(l,lt.size(l),model.cmpVideosbyViews)[1]
-            if num>lt.size(l2):
-                return 'El número ingresado excede la cantidad de videos que cumplen con los requisitos. Intente con un número igual o menor a '+str(lt.size(l))
-            else:
-                n=0
-                c=''
-                final=lt.subList(l2,1,num)
-                i=it.newIterator(final)
-                while it.hasNext(i):
-                    n+=1
-                    vid=it.next(i)
-                    c=c+'\nPuesto '+str(n)+'\ntrending_date: '+str(vid['trending_date'])+'; title: '+vid['title']+'; channel_title: '+vid['channel_title']+'; publish_time: '+vid['publish_time']+'; views: '+vid['views']+'; likes: '+vid['likes']+ '; dislikes: '+vid['dislikes']+'\n'
-                return 'Información de los '+str(num)+' videos con más views en '+pais+' para la categoría de '+categoria+':\n'+c 
 
 
     

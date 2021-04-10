@@ -98,32 +98,6 @@ while True:
         n=int(input('Ingrese el número: '))
         controller.req4(catalog,pais,tag,n)
 
-
-######
-
-    elif int(inputs[0])==9:
-        pais=input('Ingrese el país: ').lower()
-        x=controller.R2(pais,catalog)
-        print('\n'+x+'\n')
-        input('Presione enter para continuar')
-   
-
-    elif int(inputs[0])==8:
-        categoria=input('Ingrese la categoría: ')
-        repetidas=int(input('¿Contar fechas en países distintos como una sola? (1: sí / 0: no): '))
-        x=controller.R3(categoria,repetidas,catalog)
-        print('\n'+x+'\n')
-        input('Presione enter para continuar')
-
-    elif int(inputs[0])==7:
-        #hay que cambiarlo
-        categoria=(input('Ingrese la categoría: ')).lower()
-        pais=(input('Ingrese el país: ')).lower()
-        num=int(input('Ingrese el número de videos: '))
-        v=controller.R1(categoria,pais,num,catalog)
-        print('\n'+v+'\n')
-        input('Presione enter para continuar')
-
     else:
         sys.exit(0)
 sys.exit(0)

@@ -78,6 +78,10 @@ def newtitle(title):
     entry['title']=title
     return entry
 
+def newtviews(title):
+    entry={'title':'','views':0,'info':None}
+    entry['title']=title
+    return entry
 
 def addVideo(catalog,video):
     lt.addLast(catalog['videos'],video)
@@ -114,6 +118,7 @@ def addcountry(catalog,country,video):
     lt.addLast(value['videos'],video)
 
 
+#Devuelve la lista de videos de una llave específica en un mapa dado
 def getvidsby(catalog,idc,parametro):
     x=mp.get(catalog[idc],parametro)
     if x:
@@ -122,6 +127,7 @@ def getvidsby(catalog,idc,parametro):
         return None
 
 
+#Recibe una lista de videos y devuelve un mapa cuyas llaves son los nombres de los videos y cuyo valor es una entrada de la función newtitle
 def titleporidc(catalog,lista):
     mapa=mp.newMap()
     i=it.newIterator(lista)
@@ -145,6 +151,7 @@ def titleporidc(catalog,lista):
     return mapa
 
 
+#Busca video con mayor número de dias/likes/views de un map con videos y retorna una tupla con (título del video, información video, valor mayor)
 def dlv(catalog,mapa,dlv):
     info=None
     mayor=0
@@ -161,6 +168,7 @@ def dlv(catalog,mapa,dlv):
     return info['title'],info,mayor
 
 
+#Retorna una lista con los videos de un tag y país en especial
 def tags(catalog,pais,tag):
     videos=getvidsby(catalog,'countries',pais)
     final=lt.newList(datastructure='SINGLE_LINKED')
@@ -171,7 +179,7 @@ def tags(catalog,pais,tag):
             lt.addLast(final,vid)
     return final
 
-
+#Devuelve el ID dado el nombre de una categoría
 def idporcategory(name,catalog):
     categorias=catalog['categories']
     i=1
@@ -181,6 +189,7 @@ def idporcategory(name,catalog):
             return c['id']
         i+=1
 
+#Devuelve un mapa con videos de un país y id en particular cuyas llaves son los títulos de los videos y cuyos valores son entradas de newtviews
 def countryid(catalog,country,ide):
     videos=getvidsby(catalog,'countries',country)
     final=mp.newMap()
@@ -194,287 +203,6 @@ def countryid(catalog,country,ide):
             entry['info']=vid
     return final
 
-def newtviews(title):
-    entry={'title':'','views':0,'info':None}
-    entry['title']=title
-    return entry
-
-def m():
-    mapa=mp.newMap()
-    lista=countryid(catalog,country,ide)
-    i=it.newIterator(lista)
-
-
-
-##########
-
-
-# Funciones de consulta
-def tabla_mas_trending(lista):
-    tamano = lt.size(lista)
-    map_trending = mp.newMap(numelements=6, maptype="CHAINING",loadfactor=4.0,comparefunction=compareMapTitle)
-    n = 1
-    print("tamaño lista" + str(lt.size(lista)))
-
-    while n<=tamano:
-        x = lt.getElement(lista,n)
-        title = x['title']
-        print(title)
-        existTitle = mp.contains(map_trending, title)
-        print(existTitle)
-
-        if existTitle:
-            entry = mp.get(map_trending, title)
-            entry = entry["value"]
-            lista = entry["fechasyvarios"]
-
-            lista_a_adicionar = lt.newList(datastructure="ARRAY_LIST")
-            lt.addLast(lista_a_adicionar,x["trending_date"])
-            lt.addLast(lista_a_adicionar,x["title"])
-            lt.addLast(lista_a_adicionar,x["channel_title"])
-
-            lt.addLast(lista,lista_a_adicionar)
-            n += 1
-        
-        elif not existTitle:
-            video_fecha_entry = newVideo_fecha(title)
-            mp.put(map_trending, title, video_fecha_entry)
-
-            lista_a_adicionar = lt.newList(datastructure="ARRAY_LIST")
-            lt.addLast(lista_a_adicionar,x["trending_date"])
-            lt.addLast(lista_a_adicionar,x["title"])
-            lt.addLast(lista_a_adicionar,x["channel_title"])
-
-            lt.addLast(video_fecha_entry["fechasyvarios"],lista_a_adicionar)
-            n += 1
-        
-        print("N = " + str(n))
-        print("tamaño: " + str(tamano))
-        
-
-    print(mp.size(map_trending))
-    return map_trending
-
-def mas_trending(tabla):
-    keys = mp.keySet(tabla)
-    v = it.newIterator(keys)
-    num_fecha_max = 0
-    key = 0
-    info = None
-    while it.hasNext(v):
-        x = it.next(v)
-        entry = mp.get(tabla,x)
-        entry = entry["value"]
-        num_fecha = lt.size(entry["fechasyvarios"])
-        if num_fecha>num_fecha_max:
-            num_fecha_max = num_fecha
-            key = x
-            info = entry["fechasyvarios"]
-    print(info)
-    return key,num_fecha_max,info
-
-def category_name_dado_ID(id,catalog):
-    """Recibe el ID y halla el nombre de la categoria asociada
-        id: id de categoria
-        catalog: catalog
-    retorna:
-        str: nombre de la categoria"""
-    categorias = catalog["categories"]
-    v=it.newIterator(categorias)
-    while it.hasNext(v):
-        x = it.next(v)
-        if x["id"] == id:
-            return x["name"]
-    else:
-        return "NA"
-
-
-
-
-
-
-def lporcyp(ID,pais,lista):
-    """Crea una lista de videos de la categoría y el país requeridos
-        ID(int): ID de la categoría de los videos a seleccionar
-        pais(str): país de los videos a seleccionar
-        lista: lista general
-    retorna:
-        lista: con sólo los elementos que cumplen con los parámetros"""
-
-    v=it.newIterator(lista)
-    final=lt.newList(datastructure='ARRAY_LIST')
-    while it.hasNext(v):
-        x=it.next(v)
-        if x['country']==pais and x['category_id']==ID:
-            lt.addLast(final,x)
-    if lt.isEmpty(final)==True:
-        return None
-    else:
-        return final
-
-
-def lporcategoria(ID,lista):
-    """Crea una lista de videos de la categoría requerida
-        ID(int): ID de la categoría de los videos a seleccionar
-        lista: lista general
-    retorna:
-        lista: con sólo los elementos que cumplen con los parámetros"""
-
-    final=lt.newList(datastructure='ARRAY_LIST')
-    i=it.newIterator(lista)
-    while it.hasNext(i):
-        v=it.next(i)
-        if v['category_id']==ID:
-            lt.addFirst(final,v)
-    if lt.isEmpty(final)==True:
-        return None
-    else:
-        return final
-
-
-def lporpais(pais,lista):
-    """Crea una lista de videos del país requerido
-        pais(str): país de los videos a seleccionar
-        lista: lista general
-    retorna:
-        lista: con sólo los elementos que cumplen con los parámetros"""
-    final=lt.newList(datastructure='ARRAY_LIST')
-    i=it.newIterator(lista)
-    while it.hasNext(i):
-        v=it.next(i)
-        if pais.lower() == v['country'].lower():
-            lt.addLast(final,v)
-    if lt.size(final)==0:
-        return None
-    else:
-        return final
-
-
-def lportyp(tag,pais,lista):
-    """Crea una lista de videos del tag y el país requeridos
-        tag: tag presente en los videos a seleccionar
-        pais(str): país de los videos a seleccionar
-        lista: lista general
-    retorna:
-        lista: con sólo los elementos que cumplen con los parámetros"""
-    i=it.newIterator(lista)
-    final=lt.newList(datastructure='ARRAY_LIST')
-    while it.hasNext(i):
-        x=it.next(i)
-        if tag in x['tags'] and pais.lower()==x['country']:
-            lt.addLast(final,x)
-    if lt.isEmpty(final)==True:
-        return None
-    else:
-        return final
-
-
-def maxnorep(parametro,lista):
-    """Halla el video con más días siendo tendencia considerando que la misma fecha para dos países diferentes son lo mismo
-        parametro: con el cual compara los videos para revisar si son el mismo
-        lista: lista de videos
-    retorna:
-        tupla: con distintas variables del video"""
-    title=''
-    mayortotal=0
-    mayorparcial=1
-    n=2
-    while n<=lt.size(lista):
-        vid=lt.getElement(lista,n)
-        ant=lt.getElement(lista,n-1)
-        l=lt.newList()
-        lt.addLast(l,ant['trending_date'])
-        if vid[parametro]==ant[parametro]:
-            if lt.isPresent(l,vid['trending_date'])==0:
-                lt.addLast(l,vid['trending_date'])
-                mayorparcial+=1
-        else:
-            l=lt.newList()
-            lt.addLast(l,vid['trending_date'])
-            if mayorparcial>mayortotal:
-                mayortotal=mayorparcial
-                title=ant['title']
-                channel_title=ant['channel_title']
-                category_id=ant['category_id']
-                country=ant['country']
-
-            mayorparcial=1
-        n+=1
-
-    if mayorparcial>mayortotal:
-        mayortotal=mayorparcial
-        title=ant['title']
-        channel_title=ant['channel_title']
-        category_id=ant['category_id']
-        country=ant['country']
-
-    return title,channel_title,category_id,country,mayortotal
-
-
-def maxrep(parametro,lista):
-    """Halla el video con más días siendo tendencia sin considerar que la misma fecha para dos países diferentes son lo mismo
-        parametro: con el cual compara los videos para revisar si son el mismo
-        lista: lista de videos
-    retorna:
-        tupla: con distintas variables del video"""
-    mayorparcial=1
-    mayortotal=1
-    title=''
-    i=2
-    while i<=lt.size(lista):
-        v=lt.getElement(lista,i)
-        ant=lt.getElement(lista,i-1)
-        if v[parametro]==ant[parametro]:
-            mayorparcial+=1
-        else:
-            if mayorparcial>mayortotal:
-                mayortotal=mayorparcial
-                title=ant['title']
-                channel_title=ant['channel_title']
-                category_id=ant['category_id']
-                country=ant['country']
-            mayorparcial=1
-        i+=1
-
-    if mayorparcial>mayortotal:
-        mayortotal=mayorparcial
-        title=ant['title']
-        channel_title=ant['channel_title']
-        category_id=ant['category_id']
-        country=ant['country']
-
-    return title,channel_title,category_id,country,mayortotal
-
-
-
-
-
-
-def mayortrending(mapa,parametro,catalog):
-    entry=mp.get(mapa,parametro)
-    final=mp.newMap(numelements=23, maptype="PROBING",loadfactor=0.50,comparefunction=compareMapTitle)
-    if entry!=None:
-        videos=me.getValue(entry)
-        i=it.newIterator(videos)
-        while it.hasNext(i):
-            vid=it.next(i)
-            titulo=vid['title']
-            fecha=vid['trending_date']
-            if lt.isPresent(mp.keySet(final),titulo)==0:
-                fechas=lt.newList(datastructure='ARRAY_LIST')
-                lt.addLast(fechas,fecha)
-                mp.put(final,titulo,fechas)
-            else:
-                entrada=mp.get(final,titulo)
-                fechas=me.getValue(entrada)
-                if lt.isPresent(fechas,fecha)==0:
-                    lt.addLast(fechas,fecha)
-
-        m=mp.keySet(final)
-        print(lt.size(m))
-
-    else:
-        return None
 
 
 
@@ -489,27 +217,7 @@ def cmpInit(video1,video2):
         return 1
     else:
         return -1
-    
-def cmpVideosbyViews(video1,video2):
-    return(int(video1["views"])>=int(video2["views"]))
 
-def cmpVideosbyLikes(video1,video2):
-    return(int(video1["likes"])>=int(video2["likes"]))
-
-def cmpVideosbyTitleandDate(video1,video2):
-    if (video1['title'])>(video2['title']):
-        return True
-    elif video1['title']==video2['title']:
-        return video1['trending_date']>video2['trending_date']
-
-def cmpVideosbyTitle(video1,video2):
-    return (video1['title'])>=(video2['title'])
-
-def cmpVideosbyTitleandLikes(video1,video2):
-    if (video1['title'])>(video2['title']):
-        return True
-    elif video1['title']==video2['title']:
-        return video1['likes']>video2['likes']
 
 def comparemapid(id, tag):
     identry = me.getKey(tag)
@@ -530,26 +238,5 @@ def comparemapcountry(name,tag):
         return -1
 
 
-def compareid(id1,id2):
-    if (int(id1) == int(id2)):
-        return 0
-    elif (int(id1) > int(id2)):
-        return 1
-    else:
-        return 0
- 
 
-# Funciones de ordenamiento
-
-def sortVideos(lista,size,cmpfunction):
-    if size <= lt.size(lista):
-        sub_list = lt.subList(lista, 1, size)
-        sub_list = sub_list.copy()
-        start_time=time.process_time()
-        mrge.sort(sub_list, cmpfunction)
-        stop_time=time.process_time()
-        elapsed_time_mseg = round((stop_time - start_time)*1000,2)
-        return elapsed_time_mseg, sub_list
-    else:
-        return None
 
