@@ -97,11 +97,10 @@ while True:
         input('Presione enter para continuar')
 
     elif int(inputs[0])==5:
-        country=input('Ingrese el país: ')
+        pais=input('Ingrese el país: ')
         tag=input('Ingrese el tag: ')
         n=int(input('Ingrese el número: '))
-        print('\n'+(controller.req4(catalog,country.lower(),tag,n))+'\n')
-        input('Presione enter para continuar')
+        controller.req4(catalog,pais,tag,n)
 
 
 ######
@@ -129,11 +128,7 @@ while True:
         print('\n'+x+'\n')
         input('Presione enter para continuar')
 
-    elif int(inputs[0])==6:
-        pais=input('Ingrese el país: ')
-        tag=input('Ingrese el tag: ')
-        n=int(input('Ingrese el número: '))
-        controller.req4(catalog,pais,tag,n)
+
 
     else:
         sys.exit(0)
