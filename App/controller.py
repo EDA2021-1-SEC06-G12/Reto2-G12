@@ -72,38 +72,30 @@ def loadData(catalog):
 
     return delta_time, delta_memory
 
-    """
-    print("MAP_CAT_COUN:")
-    print(mp.keySet(catalog["map_categories_country"]))
-    print(mp.size(catalog["map_categories_country"]))
-    print("")
-    print("MAP_COUN:")
-    print(mp.keySet(catalog["map_countries"]))
-    print(mp.size(catalog["map_countries"]))
-    print("")
-    print("MAP_CAT:")
-    print(mp.keySet(catalog["map_categories"]))
-    print(mp.size(catalog["map_categories"]))
-    print("")
-    """
-
-
-
-def mejoresVideosPorViews(catalog, size):
-    return model.sortVideos(catalog,size,cmpVideosbyViews)
-
 
 def req2(catalog,country):
     x=model.dias(catalog,country,'countries')
     return 'title: '+x[0]+' || channel_title: '+x[1]+' || country: '+str(x[2])+' || días: '+str(x[4])
 
 def req3(catalog,categoria):
-    ide=model.ID_dado_category_name(categoria,catalog)
+    ide=model.idporcategory(categoria,catalog)
     x=model.dias(catalog,ide,'ids')
     return 'title: '+x[0]+' || channel_title: '+x[1]+' || category_id: '+str(x[3])+' || días: '+str(x[4])
 
+def req4(catalog,pais,tag,n):
+    lista=model.tags(catalog,pais,tag)
+    ordered=model.sortVideos(lista,lt.size(lista),model.cmpVideosbyLikes)[1]
+    final=model.sacar(n,ordered)
+    cadena=''
+    i=it.newIterator(final)
+    n=0
+    while it.hasNext(i):
+        n+=1
+        v=it.next(i)
+        cadena=cadena+'\nPuesto '+str(n)+'\ntitle: '+v['title']+' || channel_title: '+v['channel_title']+' || publish_time: '+str(v['publish_time'])+' || views: '+str(v['views'])+' || likes: '+str(v['likes'])+' || dislikes: '+str(v['dislikes'])+'\ntags: '+v['tags']+'\n'
+    return cadena
 
-
+#########
 
 def R1(categoria,pais,num,catalog): 
     ID=model.ID_dado_category_name(categoria,catalog)

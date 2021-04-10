@@ -69,7 +69,7 @@ def newid(ide):
 
 def newcountry(country):
     entry={'country':'','videos':None}
-    entry['country']=country
+    entry['country']=country.lower()
     entry['videos']=lt.newList()
     return entry
 
@@ -84,8 +84,10 @@ def addVideo(catalog,video):
     addid(catalog,video['category_id'],video)
     addcountry(catalog,video['country'],video)
 
+
 def addCategory(catalog,category):
     lt.addLast(catalog['categories'],category)
+
 
 def addid(catalog,ide,video):
     ids=catalog['ids']
@@ -118,6 +120,7 @@ def getvidsby(catalog,idc,parametro):
         return me.getValue(x)['videos']
     else:
         return None
+
 
 def titleporidc(catalog,parametro,idc):
     mapa=mp.newMap()
@@ -168,14 +171,42 @@ def tags(catalog,pais,tag):
     final=lt.newList()
     i=it.newIterator(videos)
     while it.hasNext(i):
-        vid=it.next(it)
+        vid=it.next(i)
         if tag in vid['tags']:
             lt.addLast(final,vid)
     return final
 
-def ndias(catalog,pais,tag):
-    lista=tags(catalog,pais,tag)
-    
+
+def idporcategory(name,catalog):
+    categorias=catalog['categories']
+    i=1
+    while i<=lt.size(categorias):
+        c=lt.getElement(categorias,i)
+        if name.lower() in (c['name']).lower():
+            return c['id']
+        i+=1
+
+
+def sacar(num,lista):
+    if num<=lt.size(lista):
+        titulos=lt.newList(datastructure="ARRAY_LIST")
+        final=lt.newList(datastructure="ARRAY_LIST")
+        primero=lt.firstElement(lista)
+        lt.addLast(titulos,primero['title'])
+        lt.addLast(final,primero)
+        i=it.newIterator(lista)
+        while it.hasNext(i) and lt.size(final)<num:
+            v=it.next(i)
+            tit = v["title"]
+            x = lt.isPresent(titulos,tit)
+            if x == 0:
+                lt.addLast(titulos,v['title'])
+                lt.addLast(final,v)
+        return final
+    else:
+        return None
+
+
 ##########
 
 
@@ -260,20 +291,7 @@ def category_name_dado_ID(id,catalog):
 
 
 
-def ID_dado_category_name(name,catalog):
-    """Recibe el nombre de una categoría y halla su respectivo ID
-        name(str): nombre de la categoría
-        catalog: catalog
-    retorna:
-        str: ID de la categoría"""
 
-    categorias=catalog['categories']
-    i=1
-    while i<=lt.size(categorias):
-        c=lt.getElement(categorias,i)
-        if name.lower() in (c['name']).lower():
-            return c['id']
-        i+=1
 
 
 def lporcyp(ID,pais,lista):
@@ -429,29 +447,7 @@ def maxrep(parametro,lista):
     return title,channel_title,category_id,country,mayortotal
 
 
-def sacar(num,lista):
-    """No permite que se repita un video en una lista
-        num: número de elementos de la nueva lista
-        lista: lista general
-    retorna:
-        lista sin valores repetidos."""
-    if num<=lt.size(lista):
-        titulos=lt.newList(datastructure="ARRAY_LIST")
-        final=lt.newList(datastructure="ARRAY_LIST")
-        primero=lt.firstElement(lista)
-        lt.addLast(titulos,primero['title'])
-        lt.addLast(final,primero)
-        i=it.newIterator(lista)
-        while it.hasNext(i) and lt.size(final)<num:
-            v=it.next(i)
-            tit = v["title"]
-            x = lt.isPresent(titulos,tit)
-            if x == 0:
-                lt.addLast(titulos,v['title'])
-                lt.addLast(final,v)
-        return final
-    else:
-        return None
+
 
 
 
@@ -480,41 +476,6 @@ def mayortrending(mapa,parametro,catalog):
 
     else:
         return None
-
-
-def suicidio(mapa,pais):
-    mapa=mp.get(mapa,pais)
-    videos=mapa['value']
-    final=mp.newMap(numelements=lt.size(videos)*20, maptype="PROBING",loadfactor=4.0,comparefunction=compareMapTitle)
-    print(lt.size(videos))
-
-    i=it.newIterator(videos)
-    m=0
-
-    while it.hasNext(i):
-        m+=1
-        vid=it.next(i)
-        title=vid['title']
-        mp.put(final,title,1)
- #       if lt.isPresent(mp.keySet(final),title)==0:
-
-    print('MM: '+str(m))
-    print(mp.size(final))
-
-
-
-"""   mayor=1
-    entry=me.newMapEntry('','')
-    i=it.newIterator(llaves)
-    while it.hasNext(i):
-        print(it.next(i))
-        l=me.getValue(ent)
-        dias=lt.getElement(l,2)
-        if dias>mayor:
-            mayor=dias
-            entry=me.newMapEntry(llave,lt.getElement(l,1))
-
-    return entry"""
 
 
 

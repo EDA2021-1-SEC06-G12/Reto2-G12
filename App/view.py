@@ -77,8 +77,8 @@ while True:
         input('Presione enter para continuar')
 
 
-
     elif int(inputs[0])==2:
+        #hay que cambiarlo
         categoria=(input('Ingrese la categoría: ')).lower()
         pais=(input('Ingrese el país: ')).lower()
         num=int(input('Ingrese el número de videos: '))
@@ -86,15 +86,34 @@ while True:
         print('\n'+v+'\n')
         input('Presione enter para continuar')
 
-    
     elif int(inputs[0])==3:
+        country=input('Ingrese el país: ')
+        print('\n'+(controller.req2(catalog,country.lower()))+'\n')
+        input('Presione enter para continuar')
+
+    elif int(inputs[0])==4:
+        categoria=input('Ingrese la categoría: ')
+        print('\n'+(controller.req3(catalog,categoria))+'\n')
+        input('Presione enter para continuar')
+
+    elif int(inputs[0])==5:
+        country=input('Ingrese el país: ')
+        tag=input('Ingrese el tag: ')
+        n=int(input('Ingrese el número: '))
+        print('\n'+(controller.req4(catalog,country.lower(),tag,n))+'\n')
+        input('Presione enter para continuar')
+
+
+######
+
+    elif int(inputs[0])==9:
         pais=input('Ingrese el país: ').lower()
         x=controller.R2(pais,catalog)
         print('\n'+x+'\n')
         input('Presione enter para continuar')
    
 
-    elif int(inputs[0])==4:
+    elif int(inputs[0])==8:
         categoria=input('Ingrese la categoría: ')
         repetidas=int(input('¿Contar fechas en países distintos como una sola? (1: sí / 0: no): '))
         x=controller.R3(categoria,repetidas,catalog)
@@ -102,7 +121,7 @@ while True:
         input('Presione enter para continuar')
 
 
-    elif int(inputs[0])==5:
+    elif int(inputs[0])==7:
         tag=input('Ingrese el tag: ')
         pais=input('Ingrese el país: ')
         num=int(input('Ingrese el número de videos: '))
@@ -110,13 +129,6 @@ while True:
         print('\n'+x+'\n')
         input('Presione enter para continuar')
 
-    elif int(inputs[0])==8:
-        country=input('Ingrese el país: ')
-        print('\n'+(controller.req2(catalog,country))+'\n')
-
-    elif int(inputs[0])==9:
-        categoria=input('Ingrese la categoría: ')
-        print('\n'+(controller.req3(catalog,categoria))+'\n')
 
     else:
         sys.exit(0)
