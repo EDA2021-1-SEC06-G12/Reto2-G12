@@ -74,7 +74,7 @@ def newcountry(country):
     return entry
 
 def newtitle(title):
-    entry={'title':'','dias':0,'info':None}
+    entry={'title':'','dias':0,'likes':0,'info':None}
     entry['title']=title
     return entry
 
@@ -122,10 +122,8 @@ def getvidsby(catalog,idc,parametro):
         return None
 
 
-def titleporidc(catalog,parametro,idc):
+def titleporidc(catalog,lista):
     mapa=mp.newMap()
-
-    lista=getvidsby(catalog,idc,parametro)
     i=it.newIterator(lista)
 
     while it.hasNext(i):
@@ -135,17 +133,20 @@ def titleporidc(catalog,parametro,idc):
         if existit:
             entry=mp.get(mapa,tit)
             value=me.getValue(entry)
+            if vid['likes']>value['likes']:
+                value['likes']=vid['likes']
         else:
             value=newtitle(tit)
             mp.put(mapa,tit,value)
             value['info']=vid
+            value['likes']=vid['likes']
         value['dias']+=1
 
     return mapa
 
 
-def dias(catalog,parametro,idc):
-    mapa=titleporidc(catalog,parametro,idc)
+def dias(catalog,lista):
+    mapa=titleporidc(catalog,lista)
     info=None
     mayor=0
     llaves=mp.keySet(mapa)
@@ -164,7 +165,6 @@ def dias(catalog,parametro,idc):
     category_id=info['category_id']
     dias=mayor    
     return tit,channel_title,country,category_id,dias
-
 
 def tags(catalog,pais,tag):
     videos=getvidsby(catalog,'countries',pais)
@@ -185,6 +185,9 @@ def idporcategory(name,catalog):
         if name.lower() in (c['name']).lower():
             return c['id']
         i+=1
+
+def likes(catalog,pais,tag,n):
+    mapa=titleporidc(catalog,tags(catalog,pais,tag))
 
 
 def sacar(num,lista):
