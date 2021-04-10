@@ -140,6 +140,7 @@ def titleporidc(catalog,parametro,idc):
 
     return mapa
 
+
 def dias(catalog,parametro,idc):
     mapa=titleporidc(catalog,parametro,idc)
     info=None
@@ -162,7 +163,19 @@ def dias(catalog,parametro,idc):
     return tit,channel_title,country,category_id,dias
 
 
+def tags(catalog,pais,tag):
+    videos=getvidsby(catalog,'countries',pais)
+    final=lt.newList()
+    i=it.newIterator(videos)
+    while it.hasNext(i):
+        vid=it.next(it)
+        if tag in vid['tags']:
+            lt.addLast(final,vid)
+    return final
 
+def ndias(catalog,pais,tag):
+    lista=tags(catalog,pais,tag)
+    
 ##########
 
 
