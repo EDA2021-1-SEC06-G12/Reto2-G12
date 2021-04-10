@@ -154,7 +154,12 @@ def dias(catalog,parametro,idc):
         if dias>mayor:
             mayor=dias
             info=value['info']
-    print(info)
+    tit=info['title']
+    channel_title=info['channel_title']
+    country=info['country']
+    category_id=info['category_id']
+    dias=mayor    
+    return tit,channel_title,country,category_id,dias
 
 
 

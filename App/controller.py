@@ -93,6 +93,18 @@ def mejoresVideosPorViews(catalog, size):
     return model.sortVideos(catalog,size,cmpVideosbyViews)
 
 
+def req2(catalog,country):
+    x=model.dias(catalog,country,'countries')
+    return 'title: '+x[0]+' || channel_title: '+x[1]+' || country: '+str(x[2])+' || días: '+str(x[4])
+
+def req3(catalog,categoria):
+    ide=model.ID_dado_category_name(categoria,catalog)
+    x=model.dias(catalog,ide,'ids')
+    return 'title: '+x[0]+' || channel_title: '+x[1]+' || category_id: '+str(x[3])+' || días: '+str(x[4])
+
+
+
+
 def R1(categoria,pais,num,catalog): 
     ID=model.ID_dado_category_name(categoria,catalog)
     if ID==None:

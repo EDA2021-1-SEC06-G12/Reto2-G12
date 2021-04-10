@@ -110,8 +110,13 @@ while True:
         print('\n'+x+'\n')
         input('Presione enter para continuar')
 
+    elif int(inputs[0])==8:
+        country=input('Ingrese el país: ')
+        print('\n'+(controller.req2(catalog,country))+'\n')
+
     elif int(inputs[0])==9:
-        print(model.dias(catalog,'10','ids'))
+        categoria=input('Ingrese la categoría: ')
+        print('\n'+(controller.req3(catalog,categoria))+'\n')
 
     else:
         sys.exit(0)
