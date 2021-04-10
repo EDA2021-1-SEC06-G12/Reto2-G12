@@ -74,7 +74,6 @@ while True:
         print("Tiempo [ms]: ", f"{answer[0]:.3f}", "  ||  ",
               "Memoria [kB]: ", f"{answer[1]:.3f}")
         print('\n') 
-        print(mp.keySet(catalog['map_ID']))
         input('Presione enter para continuar')
 
 
@@ -111,11 +110,8 @@ while True:
         print('\n'+x+'\n')
         input('Presione enter para continuar')
 
-    elif int(inputs[0])==8:
-        (model.mayortrending(catalog['map_ID'],'26',catalog))
-
     elif int(inputs[0])==9:
-        model.suicidio(catalog['map_countries'],'usa')
+        print(model.dias(catalog,'10','ids'))
 
     else:
         sys.exit(0)
