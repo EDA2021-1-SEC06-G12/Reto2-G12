@@ -76,15 +76,11 @@ while True:
         print('\n') 
         input('Presione enter para continuar')
 
-
     elif int(inputs[0])==2:
-        #hay que cambiarlo
-        categoria=(input('Ingrese la categoría: ')).lower()
-        pais=(input('Ingrese el país: ')).lower()
-        num=int(input('Ingrese el número de videos: '))
-        v=controller.R1(categoria,pais,num,catalog)
-        print('\n'+v+'\n')
-        input('Presione enter para continuar')
+        country=input('Ingrese el país: ')
+        category=input('Ingrese la categoría: ')
+        n=int(input('Ingrese el número: '))
+        controller.req1(catalog,country,category,int(n))
 
     elif int(inputs[0])==3:
         country=input('Ingrese el país: ')
@@ -119,16 +115,14 @@ while True:
         print('\n'+x+'\n')
         input('Presione enter para continuar')
 
-
     elif int(inputs[0])==7:
-        tag=input('Ingrese el tag: ')
-        pais=input('Ingrese el país: ')
+        #hay que cambiarlo
+        categoria=(input('Ingrese la categoría: ')).lower()
+        pais=(input('Ingrese el país: ')).lower()
         num=int(input('Ingrese el número de videos: '))
-        x=controller.R4(tag,pais,num,catalog)
-        print('\n'+x+'\n')
+        v=controller.R1(categoria,pais,num,catalog)
+        print('\n'+v+'\n')
         input('Presione enter para continuar')
-
-
 
     else:
         sys.exit(0)

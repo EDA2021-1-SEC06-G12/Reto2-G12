@@ -145,7 +145,7 @@ def titleporidc(catalog,lista):
     return mapa
 
 
-def diasolikes(catalog,mapa,diasolikes):
+def dlv(catalog,mapa,dlv):
     info=None
     mayor=0
     llaves=mp.keySet(mapa)
@@ -154,7 +154,7 @@ def diasolikes(catalog,mapa,diasolikes):
         llave=it.next(i)
         entry=mp.get(mapa,llave)
         value=me.getValue(entry)
-        m=int(value[diasolikes])
+        m=int(value[dlv])
         if m>mayor:
             mayor=m
             info=value['info']
@@ -180,6 +180,29 @@ def idporcategory(name,catalog):
         if name.lower() in (c['name']).lower():
             return c['id']
         i+=1
+
+def countryid(catalog,country,ide):
+    videos=getvidsby(catalog,'countries',country)
+    final=mp.newMap()
+    i=it.newIterator(videos)
+    while it.hasNext(i):
+        vid=it.next(i)
+        if vid['category_id']==ide:
+            entry=newtviews(vid['title'])
+            mp.put(final,vid['title'],entry)
+            entry['views']=vid['views']
+            entry['info']=vid
+    return final
+
+def newtviews(title):
+    entry={'title':'','views':0,'info':None}
+    entry['title']=title
+    return entry
+
+def m():
+    mapa=mp.newMap()
+    lista=countryid(catalog,country,ide)
+    i=it.newIterator(lista)
 
 
 
