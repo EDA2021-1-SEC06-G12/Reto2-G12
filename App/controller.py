@@ -104,7 +104,7 @@ def req4(catalog,pais,tag,n):
         while i<=n:
             x=model.dlv(catalog,mapa,'likes')
             info=x[1]
-            print ('\ntitle: '+info['title']+' || channel_title: '+info['channel_title']+' || publish_time: '+info['publish_time']+' || views: '+info['views']+'|| likes: '+str(x[2])+' || dislikes: '+info['dislikes']+'\ntags: '+info['tags']+'\n')
+            print ('\ntitle: '+info['title']+' || channel_title: '+info['channel_title']+' || publish_time: '+info['publish_time']+' || views: '+info['views']+' || likes: '+str(x[2])+' || dislikes: '+info['dislikes']+'\ntags: '+info['tags']+'\n')
             mp.remove(mapa,x[0])
             i+=1
 
