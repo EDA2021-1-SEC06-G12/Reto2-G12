@@ -45,17 +45,23 @@ def initCatalog():
             'videos': lt.newList(datastructure='ARRAY_LIST', cmpfunction=cmpInit),
             'categories': lt.newList(datastructure='ARRAY_LIST'),
             'ids': None,
-            'countries': None}
+            'countries': None,
+            "map_categories_country": None }
 
-    catalog['ids'] = mp.newMap(numelements=50, 
-                                maptype="PROBING",
-                                loadfactor=0.50,
+    catalog['ids'] = mp.newMap(numelements=8, 
+                                maptype="CHAINING",
+                                loadfactor=2.00,
                                 comparefunction=comparemapid)
 
-    catalog['countries'] = mp.newMap(numelements=100, 
-                                    maptype="PROBING",
-                                    loadfactor=0.50,
+    catalog['countries'] = mp.newMap(numelements=4, 
+                                    maptype="CHAINING",
+                                    loadfactor=2.00,
                                     comparefunction=comparemapcountry)
+    
+    catalog["map_categories_country"] = mp.newMap(numelements=64, 
+                                                  maptype="CHAINING",
+                                                  loadfactor=2.0,
+                                                  comparefunction=compareMapCategory)
 
     return catalog
 
@@ -64,13 +70,13 @@ def initCatalog():
 def newid(ide):
     entry={'id':0,'videos':None}
     entry['id']=ide
-    entry['videos']=lt.newList()
+    entry['videos']=lt.newList(datastructure="ARRAY_LIST")
     return entry
 
 def newcountry(country):
     entry={'country':'','videos':None}
     entry['country']=country.lower()
-    entry['videos']=lt.newList()
+    entry['videos']=lt.newList(datastructure="ARRAY_LIST")
     return entry
 
 def newtitle(title):
@@ -83,11 +89,17 @@ def newtviews(title):
     entry['title']=title
     return entry
 
+def newCategory_name_country(key):
+    entry = {'category_name_country': "", "videos": None}
+    entry['category_name_country'] = key
+    entry['videos'] = lt.newList('ARRAY_LIST', cmpVideosbyViews)
+    return entry
+
 def addVideo(catalog,video):
     lt.addLast(catalog['videos'],video)
     addid(catalog,video['category_id'],video)
     addcountry(catalog,video['country'],video)
-
+    addVideoCategoryCountry(catalog,video)
 
 def addCategory(catalog,category):
     lt.addLast(catalog['categories'],category)
@@ -107,6 +119,7 @@ def addid(catalog,ide,video):
 
 
 def addcountry(catalog,country,video):
+    country = country.lower()
     countries=catalog['countries']
     existcountry=mp.contains(countries,country)
     if existcountry:
@@ -117,6 +130,32 @@ def addcountry(catalog,country,video):
         mp.put(countries,country,value)
     lt.addLast(value['videos'],video)
 
+def addVideoCategoryCountry(catalog,video):
+    """
+    Esta funcion adiciona un video a la lista de videos que fueron trending en un país
+    y categoria específica. Esto se guarda en un map donde la llave es la combinación
+    país + nombre de la categoria y el valor es una lista de videos.
+    
+    Por ejemplo: FAKE LOVE fue trending en canada y es de categoria music
+    entonces se agrega a la lista de una llave dada por country + category_name.
+    """
+    map_categories_country = catalog["map_categories_country"]
+    category_id = video["category_id"]
+    country = video["country"].lower().strip()
+    category_name = category_name_dado_ID(video["category_id"],catalog).lower().strip()
+    key = country + category_name
+
+    existCategory_name_country = mp.contains(map_categories_country, key)
+
+    if existCategory_name_country:
+        entry = mp.get(map_categories_country, key)
+        entry = entry["value"]
+        lista = entry["videos"]
+        lt.addLast(lista,video)
+    else:
+        new_entry = newCategory_name_country(key)
+        mp.put(map_categories_country, key, new_entry)
+        lt.addLast(new_entry["videos"],video)
 
 
 #Devuelve la lista de videos de una llave específica en un mapa dado
@@ -132,7 +171,7 @@ def getvidsby(catalog,idc,parametro):
 #Retorna una lista con los videos de un tag y país en especial
 def tags(catalog,pais,tag):
     videos=getvidsby(catalog,'countries',pais)
-    final=lt.newList(datastructure='SINGLE_LINKED')
+    final=lt.newList(datastructure='ARRAY_LIST')
     i=it.newIterator(videos)
     while it.hasNext(i):
         vid=it.next(i)
@@ -142,10 +181,12 @@ def tags(catalog,pais,tag):
 
 
 #Recibe una lista de videos y devuelve un mapa cuyas llaves son los nombres de los videos y cuyo valor es una entrada de la función newtitle
-def titleporidc(catalog,lista):
-    mapa=mp.newMap()
+def titleporidc(lista):
+    mapa=mp.newMap(numelements=8192, 
+                   maptype="CHAINING",
+                   loadfactor=2.0,
+                   comparefunction=compareMapCategory)
     i=it.newIterator(lista)
-
     while it.hasNext(i):
         vid=it.next(i)
         tit=vid['title']
@@ -161,7 +202,7 @@ def titleporidc(catalog,lista):
             value['info']=vid
             value['likes']=vid['likes']
         value['dias']+=1
-
+    print(mp.size(mapa))
     return mapa
 
 
@@ -198,7 +239,21 @@ def dlv(catalog,mapa,dlv):
     return info['title'],info,mayor
 
 
-    
+def category_name_dado_ID(id,catalog):
+    """Recibe el ID y halla el nombre de la categoria asociada
+        id: id de categoria
+        catalog: catalog
+    retorna:
+        str: nombre de la categoria"""
+    categorias = catalog["categories"]
+    v=it.newIterator(categorias)
+    while it.hasNext(v):
+        x = it.next(v)
+        if x["id"] == id:
+            return x["name"]
+    else:
+        return "NA"
+
 
 #Devuelve el ID dado el nombre de una categoría
 def idporcategory(name,catalog):
@@ -211,7 +266,7 @@ def idporcategory(name,catalog):
         i+=1
 
 
-# Funciones utilizadas para comparar elementos dentro de una lista
+# Funciones utilizadas para comparar elementos
 def cmpInit(video1,video2):
     if int(video1["views"])==int(video2["views"]):
         return 0
@@ -238,6 +293,35 @@ def comparemapcountry(name,tag):
         return 1
     else:
         return -1
+
+def compareMapCategory(category1,entry):
+    category_entry = me.getKey(entry)
+    if (category1 == category_entry):
+        return 0
+    elif (category1 > category_entry):
+        return 1
+    else:
+        return -1
+
+def cmpVideosbyViews(video1,video2):
+    return(int(video1["views"])>=int(video2["views"]))
+
+def cmpVideosbyLikes(video1,video2):
+    return(int(video1["likes"])>=int(video2["likes"]))
+
+
+#Funciones de ordenamiento
+def sortVideos(lista,size,cmpfunction):
+    if size <= lt.size(lista):
+        sub_list = lt.subList(lista, 1, size)
+        sub_list = sub_list.copy()
+        start_time=time.process_time()
+        mrge.sort(sub_list, cmpfunction)
+        stop_time=time.process_time()
+        elapsed_time_mseg = round((stop_time - start_time)*1000,2)
+        return elapsed_time_mseg, sub_list
+    else:
+        return None
 
 
 

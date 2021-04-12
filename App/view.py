@@ -77,24 +77,27 @@ while True:
         input('Presione enter para continuar')
 
     elif int(inputs[0])==2:
-        country=input('Ingrese el país: ')
-        category=input('Ingrese la categoría: ')
-        n=int(input('Ingrese el número: '))
-        controller.req1(catalog,country,category,int(n))
+        categoria=(input('Ingrese la categoría: ')).lower()
+        pais=(input('Ingrese el país: ')).lower()
+        num=int(input('Ingrese el número de videos: '))
+        v=controller.R1(categoria,pais,num,catalog)
+        print('\n'+v+'\n')
+        input('Presione enter para continuar')
+
 
     elif int(inputs[0])==3:
-        country=input('Ingrese el país: ')
-        print('\n'+(controller.req2(catalog,country.lower()))+'\n')
+        country=input('Ingrese el país: ').lower()
+        print('\n'+(controller.req2(catalog,country))+'\n')
         input('Presione enter para continuar')
 
     elif int(inputs[0])==4:
-        categoria=input('Ingrese la categoría: ')
+        categoria=input('Ingrese la categoría: ').lower()
         print('\n'+(controller.req3(catalog,categoria))+'\n')
         input('Presione enter para continuar')
 
     elif int(inputs[0])==5:
-        pais=input('Ingrese el país: ')
-        tag=input('Ingrese el tag: ')
+        pais=input('Ingrese el país: ').lower()
+        tag=input('Ingrese el tag: ').lower()
         n=int(input('Ingrese el número: '))
         controller.req4(catalog,pais,tag,n)
 
