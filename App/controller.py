@@ -112,7 +112,7 @@ def req3(catalog,category,td):
         info=x[1]
         return 'INFORMACIÓN DEL VIDEO TENDENCIA POR MÁS DÍAS PARA LA CATEGORÍA '+category.upper()+'\ntitle: '+info['title']+' || channel_title: '+info['channel_title']+' || category_id: '+str(info['category_id'])+' || días: '+str(x[2])
 
-def req4(catalog,country,tag,n,td):
+def req4(catalog,country,tag,n):
     lista=model.getvidsby(catalog,'countries',country)
     if lista==None:
         print('\nNO HAY INFORMACIÓN PARA ESTE PAÍS\n')
@@ -121,7 +121,7 @@ def req4(catalog,country,tag,n,td):
         if lt.size(lista2)==0:
             print('\nNO HAY INFORMACIÓN PARA ESTE TAG\n')
         else:
-            mapa=model.titleporidc('likes',lista2,td)
+            mapa=model.titleporidc('likes',lista2,'title')
             i=1
             print('\nINFORMACIÓN DE LOS '+str(n)+' VIDEOS CON MÁS LIKES EN '+country.upper()+' CON EL TAG '+tag.upper())
             while i<=n:

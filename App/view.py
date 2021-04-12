@@ -112,14 +112,7 @@ while True:
         country=input('Ingrese el país: ').lower()
         tag=input('Ingrese el tag: ').lower()
         n=int((input('Ingrese el número: ')))
-        x=input('Desea organizar videos por... (0: título / 1: video ID): ')
-        if x=='0':
-            td='title'
-        elif x=='1':
-            td='video_id'
-        else:
-            print('Ingrese una opción válida (0,1)')
-        controller.req4(catalog,country,tag,n,td)
+        controller.req4(catalog,country,tag,n)
         input('Presione enter para continuar')
 
     else:
