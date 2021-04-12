@@ -111,7 +111,6 @@ def req2(catalog,country):
         mapa=model.titleporidc(lista)
         x=model.dlv(catalog,mapa,'dias')
         info=x[1]
-        print(mp.get(mapa,info["title"]))
         return 'title: '+info['title']+' || channel_title: '+info['channel_title']+' || country: '+info['country']+' || días: '+str(x[2])
 
 def req3(catalog,categoria):

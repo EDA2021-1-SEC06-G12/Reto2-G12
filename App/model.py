@@ -202,7 +202,6 @@ def titleporidc(lista):
             value['info']=vid
             value['likes']=vid['likes']
         value['dias']+=1
-    print(mp.size(mapa))
     return mapa
 
 
