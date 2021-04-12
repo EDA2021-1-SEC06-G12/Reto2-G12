@@ -43,9 +43,9 @@ def printMenu():
     print("Bienvenida/o")
     print("1- Cargar información en el catálogo")
     print("2- Consultar el número que se desee de videos con más views en el país y categoría de interés")
-    print("3- Consultar el video que ha estado trending por más días en el país que se desee")
-    print("4- Consultar el video que ha estado trending por más días en la categoría que se desee")
-    print("5- Consultar el número que se desee de videos con más views en el país y tag de interés")
+    print("3- Consultar el video tendencia por más días en el país que se desee")
+    print("4- Consultar el video tendencia trending por más días en la categoría que se desee")
+    print("5- Consultar el número que se desee de videos con más likes en el país y tag de interés")
     print("0- Salir")
 
 
@@ -90,15 +90,15 @@ while True:
         input('Presione enter para continuar')
 
     elif int(inputs[0])==4:
-        categoria=input('Ingrese la categoría: ').lower()
-        print('\n'+(controller.req3(catalog,categoria))+'\n')
+        category=input('Ingrese la categoría: ').lower()
+        print('\n'+(controller.req3(catalog,category))+'\n')
         input('Presione enter para continuar')
 
     elif int(inputs[0])==5:
-        pais=input('Ingrese el país: ').lower()
+        country=input('Ingrese el país: ').lower()
         tag=input('Ingrese el tag: ').lower()
         n=int((input('Ingrese el número: ')))
-        controller.req4(catalog,pais,tag,n)
+        controller.req4(catalog,country,tag,n)
         input('Presione enter para continuar')
 
     else:

@@ -57,7 +57,7 @@ def loadData(catalog):
     for category in i_file:
         model.addCategory(catalog,category)
 
-    videosfile = cf.data_dir + 'videos-large.csv'
+    videosfile = cf.data_dir + 'videos-small.csv'
     input_file = csv.DictReader(open(videosfile, encoding='utf-8'))
     for video in input_file:
         video["trending_date"] = datetime.strptime(video["trending_date"],"%y.%d.%m").date()
@@ -78,55 +78,59 @@ def req1(catalog,country,category,n):
     lista=model.getvidsby(catalog,'countries',country)
     ide=model.idporcategory(category,catalog)
     if lista==None or ide==None:
-        print('\nNo hay información para este país o categoría.\n')
+        print('\nNO HAY INFORMACIÓN PARA ESTE PAÍS O CATEGORÍA\n')
     else:
         mapa=model.countryid(lista,ide)
         i=1
+        print('\nINFORMACIÓN DE LOS '+str(n)+' VIDEOS CON MÁS VIEWS EN '+country.upper()+' PARA LA CATEGORÍA '+category.upper())
         while i<=n:
             x=model.dlv(catalog,mapa,'views')
             info=x[1]
-            print ('\ntrending_date: '+str(info['trending_date'])+' || title: '+info['title']+' || channel_title: '+info['channel_title']+' || publish_time: '+info['publish_time']+' || views: '+info['views']+'|| likes: '+str(x[2])+' || dislikes: '+info['dislikes']+'\n')
+            print ('\nPUESTO '+str(i)+'\ntrending_date: '+str(info['trending_date'])+' || title: '+info['title']+' || channel_title: '+info['channel_title']+' || publish_time: '+info['publish_time']+' || views: '+info['views']+'|| likes: '+str(x[2])+' || dislikes: '+info['dislikes'])
             mp.remove(mapa,x[0])
             i+=1
+        print('\n')
 
 def req2(catalog,country):
     lista = model.getvidsby(catalog,'countries',country)
     if lista == None:
-        return 'No hay información para este país'
+        return 'NO HAY INFORMACIÓN PARA ESTE PAÍS'
     else:
         mapa=model.titleporidc('dias',lista)
         x=model.dlv(catalog,mapa,'dias')
         info=x[1]
-        return 'title: '+info['title']+' || channel_title: '+info['channel_title']+' || country: '+info['country']+' || días: '+str(x[2])
+        return 'INFORMACIÓN DEL VIDEO TENDENCIA POR MÁS DÍAS EN '+country.upper()+'\ntitle: '+info['title']+' || channel_title: '+info['channel_title']+' || country: '+info['country']+' || días: '+str(x[2])
 
-def req3(catalog,categoria):
-    ide=model.idporcategory(categoria,catalog)
+def req3(catalog,category):
+    ide=model.idporcategory(category,catalog)
     if ide==None:
-        return 'No hay información para esta categoría'
+        return 'NO HAY INFORMACIÓN PARA ESTA CATEGORÍA'
     else:
         lista = model.getvidsby(catalog,'ids',ide)
         mapa=model.titleporidc('dias',lista)
         x=model.dlv(catalog,mapa,'dias')
         info=x[1]
-        return 'title: '+info['title']+' || channel_title: '+info['channel_title']+' || category_id: '+str(info['category_id'])+' || días: '+str(x[2])
+        return 'INFORMACIÓN DEL VIDEO TENDENCIA POR MÁS DÍAS PARA LA CATEGORÍA '+category.upper()+'\ntitle: '+info['title']+' || channel_title: '+info['channel_title']+' || category_id: '+str(info['category_id'])+' || días: '+str(x[2])
 
-def req4(catalog,pais,tag,n):
-    lista=model.getvidsby(catalog,'countries',pais)
+def req4(catalog,country,tag,n):
+    lista=model.getvidsby(catalog,'countries',country)
     if lista==None:
-        print('\nNo hay información para este país\n')
+        print('\nNO HAY INFORMACIÓN PARA ESTE PAÍS\n')
     else:
         lista2=model.tags(catalog,lista,tag)
         if lt.size(lista2)==0:
-            print('\nNo hay información para este tag\n')
+            print('\nNO HAY INFORMACIÓN PARA ESTE TAG\n')
         else:
             mapa=model.titleporidc('likes',lista2)
             i=1
+            print('\nINFORMACIÓN DE LOS '+str(n)+' VIDEOS CON MÁS LIKES EN '+country.upper()+' CON EL TAG '+tag.upper())
             while i<=n:
                 x=model.dlv(catalog,mapa,'likes')
                 info=x[1]
-                print('\ntitle: '+info['title']+' || channel_title: '+info['channel_title']+' || publish_time: '+info['publish_time']+' || views: '+info['views']+' || likes: '+str(x[2])+' || dislikes: '+info['dislikes']+'\ntags: '+info['tags']+'\n')
+                print('\nPUESTO '+str(i)+'\ntitle: '+info['title']+' || channel_title: '+info['channel_title']+' || publish_time: '+info['publish_time']+' || views: '+info['views']+' || likes: '+str(x[2])+' || dislikes: '+info['dislikes']+'\ntags: '+info['tags'])
                 mp.remove(mapa,x[0])
                 i+=1
+            print('\n')
 
 #########
 
