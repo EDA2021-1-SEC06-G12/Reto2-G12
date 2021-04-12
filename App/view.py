@@ -86,19 +86,40 @@ while True:
 
     elif int(inputs[0])==3:
         country=input('Ingrese el país: ').lower()
-        print('\n'+(controller.req2(catalog,country))+'\n')
+        x=input('Desea organizar videos por... (0: título / 1: video ID): ')
+        if x=='0':
+            td='title'
+        elif x=='1':
+            td='video_id'
+        else:
+            print('Ingrese una opción válida (0,1)')
+        print('\n'+(controller.req2(catalog,country,td))+'\n')
         input('Presione enter para continuar')
 
     elif int(inputs[0])==4:
         category=input('Ingrese la categoría: ').lower()
-        print('\n'+(controller.req3(catalog,category))+'\n')
+        x=input('Desea organizar videos por... (0: título / 1: video ID): ')
+        if x=='0':
+            td='title'
+        elif x=='1':
+            td='video_id'
+        else:
+            print('Ingrese una opción válida (0,1)')
+        print('\n'+(controller.req3(catalog,category,td))+'\n')
         input('Presione enter para continuar')
 
     elif int(inputs[0])==5:
         country=input('Ingrese el país: ').lower()
         tag=input('Ingrese el tag: ').lower()
         n=int((input('Ingrese el número: ')))
-        controller.req4(catalog,country,tag,n)
+        x=input('Desea organizar videos por... (0: título / 1: video ID): ')
+        if x=='0':
+            td='title'
+        elif x=='1':
+            td='video_id'
+        else:
+            print('Ingrese una opción válida (0,1)')
+        controller.req4(catalog,country,tag,n,td)
         input('Presione enter para continuar')
 
     else:

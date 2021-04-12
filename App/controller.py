@@ -57,7 +57,7 @@ def loadData(catalog):
     for category in i_file:
         model.addCategory(catalog,category)
 
-    videosfile = cf.data_dir + 'videos-small.csv'
+    videosfile = cf.data_dir + 'videos-large.csv'
     input_file = csv.DictReader(open(videosfile, encoding='utf-8'))
     for video in input_file:
         video["trending_date"] = datetime.strptime(video["trending_date"],"%y.%d.%m").date()
@@ -91,28 +91,28 @@ def req1(catalog,country,category,n):
             i+=1
         print('\n')
 
-def req2(catalog,country):
+def req2(catalog,country,td):
     lista = model.getvidsby(catalog,'countries',country)
     if lista == None:
         return 'NO HAY INFORMACIÓN PARA ESTE PAÍS'
     else:
-        mapa=model.titleporidc('dias',lista)
+        mapa=model.titleporidc('dias',lista,td)
         x=model.dlv(catalog,mapa,'dias')
         info=x[1]
         return 'INFORMACIÓN DEL VIDEO TENDENCIA POR MÁS DÍAS EN '+country.upper()+'\ntitle: '+info['title']+' || channel_title: '+info['channel_title']+' || country: '+info['country']+' || días: '+str(x[2])
 
-def req3(catalog,category):
+def req3(catalog,category,td):
     ide=model.idporcategory(category,catalog)
     if ide==None:
         return 'NO HAY INFORMACIÓN PARA ESTA CATEGORÍA'
     else:
         lista = model.getvidsby(catalog,'ids',ide)
-        mapa=model.titleporidc('dias',lista)
+        mapa=model.titleporidc('dias',lista,td)
         x=model.dlv(catalog,mapa,'dias')
         info=x[1]
         return 'INFORMACIÓN DEL VIDEO TENDENCIA POR MÁS DÍAS PARA LA CATEGORÍA '+category.upper()+'\ntitle: '+info['title']+' || channel_title: '+info['channel_title']+' || category_id: '+str(info['category_id'])+' || días: '+str(x[2])
 
-def req4(catalog,country,tag,n):
+def req4(catalog,country,tag,n,td):
     lista=model.getvidsby(catalog,'countries',country)
     if lista==None:
         print('\nNO HAY INFORMACIÓN PARA ESTE PAÍS\n')
@@ -121,13 +121,14 @@ def req4(catalog,country,tag,n):
         if lt.size(lista2)==0:
             print('\nNO HAY INFORMACIÓN PARA ESTE TAG\n')
         else:
-            mapa=model.titleporidc('likes',lista2)
+            mapa=model.titleporidc('likes',lista2,td)
             i=1
             print('\nINFORMACIÓN DE LOS '+str(n)+' VIDEOS CON MÁS LIKES EN '+country.upper()+' CON EL TAG '+tag.upper())
             while i<=n:
                 x=model.dlv(catalog,mapa,'likes')
                 info=x[1]
                 print('\nPUESTO '+str(i)+'\ntitle: '+info['title']+' || channel_title: '+info['channel_title']+' || publish_time: '+info['publish_time']+' || views: '+info['views']+' || likes: '+str(x[2])+' || dislikes: '+info['dislikes']+'\ntags: '+info['tags'])
+                print(info['video_id'])
                 mp.remove(mapa,x[0])
                 i+=1
             print('\n')
