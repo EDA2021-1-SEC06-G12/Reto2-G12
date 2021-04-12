@@ -86,7 +86,7 @@ def req1(catalog,country,category,n):
         while i<=n:
             x=model.dlv(catalog,mapa,'views')
             info=x[1]
-            print ('\nPUESTO '+str(i)+'\ntrending_date: '+str(info['trending_date'])+' || title: '+info['title']+' || channel_title: '+info['channel_title']+' || publish_time: '+info['publish_time']+' || views: '+info['views']+'|| likes: '+str(x[2])+' || dislikes: '+info['dislikes'])
+            print ('\nPUESTO '+str(i)+'\ntrending_date: '+str(info['trending_date'])+' || title: '+info['title']+' || channel_title: '+info['channel_title']+' || publish_time: '+info['publish_time']+' || views: '+str(x[2])+' || likes: '+info['likes']+' || dislikes: '+info['dislikes'])
             mp.remove(mapa,x[0])
             i+=1
         print('\n')
