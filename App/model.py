@@ -46,12 +46,12 @@ def initCatalog():
             'ids': None,
             'countries': None}
 
-    catalog['ids'] = mp.newMap(numelements=8, 
+    catalog['ids'] = mp.newMap(numelements=36, 
                                 maptype="PROBING",
                                 loadfactor=0.5,
                                 comparefunction=comparemapid)
 
-    catalog['countries'] = mp.newMap(numelements=4, 
+    catalog['countries'] = mp.newMap(numelements=8, 
                                     maptype="PROBING",
                                     loadfactor=0.5,
                                     comparefunction=comparemapcountry)
@@ -59,6 +59,9 @@ def initCatalog():
     return catalog
 
 def addVideo(catalog,video):
+    """
+    Añade videos a la lista de videos del catalogo y a los maps ids y countries 
+    """
     lt.addLast(catalog['videos'],video)
     addid(catalog,video['category_id'],video)
     addcountry(catalog,video['country'].lower(),video)
@@ -100,6 +103,10 @@ def newtviews(title):
 
 
 def addid(catalog,ide,video):
+    """
+    Adiciona el video a una lista que es el valor de una llave
+    del Map "ids" dada por el id del video.
+    """
     ids=catalog['ids']
     existid=mp.contains(ids,ide)
     if existid:
@@ -113,6 +120,10 @@ def addid(catalog,ide,video):
 
 
 def addcountry(catalog,country,video):
+    """
+    Adiciona el video a una lista que es el valor de una llave
+    del Map "countries" dada por el pais del video.
+    """
     country = country.lower()
     countries=catalog['countries']
     existcountry=mp.contains(countries,country)
@@ -125,8 +136,11 @@ def addcountry(catalog,country,video):
     lt.addLast(value['videos'],video)
 
 
-#Devuelve la lista de videos de una llave específica en un mapa dado
+
 def getvidsby(catalog,idc,parametro):
+    """
+    Devuelve la lista de videos de una llave específica en un mapa dado
+    """
     x=mp.get(catalog[idc],parametro)
     if x:
         return me.getValue(x)['videos']
@@ -135,8 +149,10 @@ def getvidsby(catalog,idc,parametro):
 
 
 
-#Dada una lista de videos retorna otra con los que tienen un tag en especial
 def tags(catalog,lista,tag):
+    """
+    Dada una lista de videos retorna otra con los videos que tienen un tag dado
+    """
     final=lt.newList(datastructure='ARRAY_LIST')
     i=it.newIterator(lista)
     while it.hasNext(i):
@@ -146,11 +162,14 @@ def tags(catalog,lista,tag):
     return final
 
 
-#Recibe una lista de videos y devuelve un mapa cuyas llaves son los nombres de los videos y cuyo valor es una entrada de la función newtlikes o newtdias
+
 def titleporidc(parametro,lista):
-    mapa=mp.newMap(numelements=8192, 
-                   maptype="CHAINING",
-                   loadfactor=2.0,
+    """
+    Recibe una lista de videos y devuelve un mapa cuyas llaves son los nombres de los videos y cuyo valor es una entrada de la función newtlikes o newtdias
+    """
+    mapa=mp.newMap(numelements=65536, 
+                   maptype="PROBING",
+                   loadfactor=0.5,
                    comparefunction=comparemapcategory)
     i=it.newIterator(lista)
     while it.hasNext(i):
@@ -176,26 +195,43 @@ def titleporidc(parametro,lista):
                 mp.put(mapa,tit,value)
                 value['info']=vid
                 value['dias']+=1
-        
+    print("tamaño titleidc = " + str(mp.size(mapa)))
     return mapa
 
-#Devuelve un mapa con videos de un país y id en particular cuyas llaves son los títulos de los videos y cuyos valores son entradas de newtviews
+
 def countryid(lista,ide):
-    mapa=mp.newMap()
+    """
+    Devuelve un mapa con videos de un category_id en particular, a partir de la lista de videos ya filtrada por pais, cuyas llaves son los títulos de los videos y cuyos valores son entradas de newtviews
+    """
+    mapa=mp.newMap(numelements=4096, 
+                    maptype="PROBING",
+                    loadfactor=0.5)
     i=it.newIterator(lista)
     while it.hasNext(i):
         vid=it.next(i)
         if vid['category_id']==ide:
-            entry=newtviews(vid['title'])
-            mp.put(mapa,vid['title'],entry)
-            entry['views']=vid['views']
-            entry['info']=vid
+            tit = vid["title"]
+            existit=mp.contains(mapa,tit)
+            if existit:
+                entry = mp.get(mapa,tit)
+                value = me.getValue(entry)
+                if vid["views"]>value["views"]:
+                    value["views"] = vid["views"]
+            else:
+                entry=newtviews(vid['title'])
+                mp.put(mapa,vid['title'],entry)
+                entry['views']=vid['views']
+                entry['info']=vid
+    
     return mapa
 
 
 
-#Busca video con mayor número de dias/likes/views de un map con videos y retorna una tupla con (título del video, información video, valor mayor)
+
 def dlv(catalog,mapa,dlv):
+    """
+    Busca el video con mayor número de dias/likes/views de un map con videos y retorna una tupla con (título del video, información video, valor mayor)
+    """
     info=None
     mayor=0
     llaves=mp.keySet(mapa)
@@ -212,8 +248,11 @@ def dlv(catalog,mapa,dlv):
 
 
 
-#Devuelve el ID dado el nombre de una categoría
+
 def idporcategory(name,catalog):
+    """
+    Devuelve el ID dado el nombre de una categoría
+    """
     categorias=catalog['categories']
     i=1
     while i<=lt.size(categorias):
