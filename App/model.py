@@ -81,19 +81,15 @@ def newcountry(country):
     entry['videos']=lt.newList(datastructure="ARRAY_LIST")
     return entry
 
-def newtitle(title):
-    entry={'title':'','dias':0,'likes':0,'info':None}
-    entry['title']=title
+
+def newtdias(titoid):
+    entry={'vid':'','dias':0,'info':None}
+    entry['vid']=titoid
     return entry
 
-def newtdias(title):
-    entry={'title':'','dias':0,'info':None}
-    entry['title']=title
-    return entry
-
-def newtlikes(title):
-    entry={'title':'','likes':0,'info':None}
-    entry['title']=title
+def newtlikes(titoid):
+    entry={'vid':'','likes':0,'info':None}
+    entry['vid']=titoid
     return entry
 
 def newtviews(title):
@@ -163,21 +159,21 @@ def tags(catalog,lista,tag):
 
 
 
-def titleporidc(parametro,lista):
+
+def titleporidc(parametro,lista,titoid):
     """
     Recibe una lista de videos y devuelve un mapa cuyas llaves son los nombres de los videos y cuyo valor es una entrada de la función newtlikes o newtdias
     """
     mapa=mp.newMap(numelements=65536, 
                    maptype="PROBING",
-                   loadfactor=0.5,
-                   comparefunction=comparemapcategory)
+                   loadfactor=0.5)
     i=it.newIterator(lista)
     while it.hasNext(i):
         vid=it.next(i)
-        tit=vid['title']
-        existit=mp.contains(mapa,tit)
+        td=vid[titoid]
+        existit=mp.contains(mapa,td)
         if existit:
-            entry=mp.get(mapa,tit)
+            entry=mp.get(mapa,td)
             value=me.getValue(entry)
             if parametro=='likes':
                 if vid['likes']>value['likes']:
@@ -186,13 +182,13 @@ def titleporidc(parametro,lista):
                 value['dias']+=1
         else:
             if parametro=='likes':
-                value=newtlikes(tit)
-                mp.put(mapa,tit,value)
+                value=newtlikes(td)
+                mp.put(mapa,td,value)
                 value['info']=vid
                 value['likes']=vid['likes']
             elif parametro=='dias':
-                value=newtdias(tit)
-                mp.put(mapa,tit,value)
+                value=newtdias(td)
+                mp.put(mapa,td,value)
                 value['info']=vid
                 value['dias']+=1
     print("tamaño titleidc = " + str(mp.size(mapa)))
@@ -232,6 +228,7 @@ def dlv(catalog,mapa,dlv):
     """
     Busca el video con mayor número de dias/likes/views de un map con videos y retorna una tupla con (título del video, información video, valor mayor)
     """
+    vid=''
     info=None
     mayor=0
     llaves=mp.keySet(mapa)
@@ -244,7 +241,8 @@ def dlv(catalog,mapa,dlv):
         if m>mayor:
             mayor=m
             info=value['info']
-    return info['title'],info,mayor
+            vid=llave
+    return vid,info,mayor
 
 
 
