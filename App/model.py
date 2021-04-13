@@ -191,7 +191,7 @@ def titleporidc(parametro,lista,titoid):
                 mp.put(mapa,td,value)
                 value['info']=vid
                 value['dias']+=1
-    print("tamaño titleidc = " + str(mp.size(mapa)))
+
     return mapa
 
 

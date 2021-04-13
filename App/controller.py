@@ -74,6 +74,13 @@ def loadData(catalog):
 
 
 def req1(catalog,country,category,n):
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
     lista=model.getvidsby(catalog,'countries',country)
     ide=model.idporcategory(category,catalog)
     if lista==None or ide==None:
@@ -88,9 +95,27 @@ def req1(catalog,country,category,n):
             print ('\nPUESTO '+str(i)+'\ntrending_date: '+str(info['trending_date'])+' || title: '+info['title']+' || channel_title: '+info['channel_title']+' || publish_time: '+info['publish_time']+' || views: '+str(x[2])+' || likes: '+info['likes']+' || dislikes: '+info['dislikes'])
             mp.remove(mapa,x[0])
             i+=1
-        print('\n')
+            print('\n')
+
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+
+    return delta_time, delta_memory
+    
+
 
 def req2(catalog,country,td):
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
     lista = model.getvidsby(catalog,'countries',country)
     if lista == None:
         return 'NO HAY INFORMACIÓN PARA ESTE PAÍS'
@@ -98,9 +123,23 @@ def req2(catalog,country,td):
         mapa=model.titleporidc('dias',lista,td)
         x=model.dlv(catalog,mapa,'dias')
         info=x[1]
-        return 'INFORMACIÓN DEL VIDEO TENDENCIA POR MÁS DÍAS EN '+country.upper()+'\ntitle: '+info['title']+' || channel_title: '+info['channel_title']+' || country: '+info['country']+' || días: '+str(x[2])
+        
+        stop_memory = getMemory()
+        stop_time = getTime()
+        tracemalloc.stop()
+        delta_time = stop_time - start_time
+        delta_memory = deltaMemory(start_memory, stop_memory)
+
+        return ('INFORMACIÓN DEL VIDEO TENDENCIA POR MÁS DÍAS EN '+country.upper()+'\ntitle: '+info['title']+' || channel_title: '+info['channel_title']+' || country: '+info['country']+' || días: '+str(x[2]),delta_time, delta_memory)
 
 def req3(catalog,category,td):
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
     ide=model.idporcategory(category,catalog)
     if ide==None:
         return 'NO HAY INFORMACIÓN PARA ESTA CATEGORÍA'
@@ -109,9 +148,24 @@ def req3(catalog,category,td):
         mapa=model.titleporidc('dias',lista,td)
         x=model.dlv(catalog,mapa,'dias')
         info=x[1]
-        return 'INFORMACIÓN DEL VIDEO TENDENCIA POR MÁS DÍAS PARA LA CATEGORÍA '+category.upper()+'\ntitle: '+info['title']+' || channel_title: '+info['channel_title']+' || category_id: '+str(info['category_id'])+' || días: '+str(x[2])
+
+        stop_memory = getMemory()
+        stop_time = getTime()
+        tracemalloc.stop()
+
+        delta_time = stop_time - start_time
+        delta_memory = deltaMemory(start_memory, stop_memory)
+
+        return ('INFORMACIÓN DEL VIDEO TENDENCIA POR MÁS DÍAS PARA LA CATEGORÍA '+category.upper()+'\ntitle: '+info['title']+' || channel_title: '+info['channel_title']+' || category_id: '+str(info['category_id'])+' || días: '+str(x[2]),delta_time, delta_memory)
 
 def req4(catalog,country,tag,n):
+    delta_time = -1.0
+    delta_memory = -1.0
+
+    tracemalloc.start()
+    start_time = getTime()
+    start_memory = getMemory()
+
     lista=model.getvidsby(catalog,'countries',country)
     if lista==None:
         print('\nNO HAY INFORMACIÓN PARA ESTE PAÍS\n')
@@ -130,7 +184,17 @@ def req4(catalog,country,tag,n):
                 print(info['video_id'])
                 mp.remove(mapa,x[0])
                 i+=1
-            print('\n')
+                print('\n')
+
+    stop_memory = getMemory()
+    stop_time = getTime()
+    tracemalloc.stop()
+
+    delta_time = stop_time - start_time
+    delta_memory = deltaMemory(start_memory, stop_memory)
+
+    return delta_time, delta_memory
+    
 
 #########
 
