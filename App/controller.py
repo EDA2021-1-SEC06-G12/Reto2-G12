@@ -89,7 +89,7 @@ def req1(catalog,country,category,n):
         mapa=model.countryid(lista,ide)
         i=1
         print('\nINFORMACIÓN DE LOS '+str(n)+' VIDEOS CON MÁS VIEWS EN '+country.upper()+' PARA LA CATEGORÍA '+category.upper())
-        while i<=n:
+        while i<=n and mp.size(mapa)!=0:
             x=model.dlv(catalog,mapa,'views')
             info=x[1]
             print ('\nPUESTO '+str(i)+'\ntrending_date: '+str(info['trending_date'])+' || title: '+info['title']+' || channel_title: '+info['channel_title']+' || publish_time: '+info['publish_time']+' || views: '+str(x[2])+' || likes: '+info['likes']+' || dislikes: '+info['dislikes'])
@@ -177,7 +177,7 @@ def req4(catalog,country,tag,n):
             mapa=model.titleporidc('likes',lista2,'title')
             i=1
             print('\nINFORMACIÓN DE LOS '+str(n)+' VIDEOS CON MÁS LIKES EN '+country.upper()+' CON EL TAG '+tag.upper())
-            while i<=n:
+            while i<=n and mp.size(mapa)!=0:
                 x=model.dlv(catalog,mapa,'likes')
                 info=x[1]
                 print('\nPUESTO '+str(i)+'\ntitle: '+info['title']+' || channel_title: '+info['channel_title']+' || publish_time: '+info['publish_time']+' || views: '+info['views']+' || likes: '+str(x[2])+' || dislikes: '+info['dislikes']+'\ntags: '+info['tags'])

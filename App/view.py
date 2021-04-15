@@ -81,8 +81,7 @@ while True:
         category=input('Ingrese la categoría: ').lower()
         n=int((input('Ingrese el número: ')))
         answer = controller.req1(catalog,country,category,n)
-        print("Tiempo [ms]: ", f"{answer[0]:.3f}", "  ||  ",
-              "Memoria [kB]: ", f"{answer[1]:.3f}")
+        print("Tiempo [ms]: "+f"{answer[0]:.3f}"+" ||  "+"Memoria [kB]: "+f"{answer[1]:.3f}")
         print('\n') 
         input('Presione enter para continuar')
 
@@ -99,8 +98,7 @@ while True:
         answer = controller.req2(catalog,country,td)
 
         print('\n'+answer[0]+'\n')
-        print("Tiempo [ms]: ", f"{answer[1]:.3f}", "  ||  ",
-              "Memoria [kB]: ", f"{answer[2]:.3f}")
+        print("Tiempo [ms]: "+f"{answer[1]:.3f}"+"  ||  "+"Memoria [kB]: "+ f"{answer[2]:.3f}")
         print('\n') 
         
         input('Presione enter para continuar')
@@ -116,8 +114,7 @@ while True:
             print('Ingrese una opción válida (0,1)')
         answer = controller.req3(catalog,category,td)
         print('\n'+answer[0]+'\n')
-        print("Tiempo [ms]: ", f"{answer[1]:.3f}", "  ||  ",
-              "Memoria [kB]: ", f"{answer[2]:.3f}")
+        print("Tiempo [ms]: "+f"{answer[1]:.3f}"+ "  ||  "+"Memoria [kB]: "+ f"{answer[2]:.3f}")
         print('\n') 
         
         input('Presione enter para continuar')
@@ -127,8 +124,7 @@ while True:
         tag=input('Ingrese el tag: ').lower()
         n=int((input('Ingrese el número: ')))
         answer = controller.req4(catalog,country,tag,n)
-        print("Tiempo [ms]: ", f"{answer[0]:.3f}", "  ||  ",
-              "Memoria [kB]: ", f"{answer[1]:.3f}")
+        print("Tiempo [ms]: "+f"{answer[0]:.3f}", "  ||  "+"Memoria [kB]: "+f"{answer[1]:.3f}")
         print('\n') 
         input('Presione enter para continuar')
 
